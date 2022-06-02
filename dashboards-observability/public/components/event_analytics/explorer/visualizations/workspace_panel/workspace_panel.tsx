@@ -64,7 +64,7 @@ export function WorkspacePanel({ visualizations }: IWorkSpacePanel) {
           <EuiSpacer size="s" />
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiPanel paddingSize="s">
+          <EuiPanel paddingSize="s" className="ag-theme-alpine">
             {isTableViewOn ? 
             <DataTable 
               visualizations={visualizations}
