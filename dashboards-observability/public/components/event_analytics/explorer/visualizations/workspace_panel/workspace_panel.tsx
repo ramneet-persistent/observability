@@ -64,7 +64,8 @@ export function WorkspacePanel({ visualizations }: IWorkSpacePanel) {
           <EuiSpacer size="s" />
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiPanel paddingSize="s" className="ag-theme-alpine">
+          <EuiPanel id="myGrid" paddingSize="s" className={uiSettingsService.get('theme:darkMode') ? 
+          "ag-theme-alpine-dark": "ag-theme-alpine"}>
             {isTableViewOn ? 
             <DataTable 
               visualizations={visualizations}

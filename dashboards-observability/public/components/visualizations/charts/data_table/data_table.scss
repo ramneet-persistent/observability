@@ -24,11 +24,10 @@
 .custom-pagination-container a {
   cursor: pointer;
 }
-.custom-pagination-container .selected a {
-  color: #006bb4;
-  text-decoration: underline;
-  cursor: default;
-}
+
+
+
+
 
 .custom-pagination-container .disabled {
   cursor: default;
@@ -36,12 +35,19 @@
 .custom-pagination-container a {
   color: #343741;
 }
+.dark-theme a {
+  color: #DFE5EF;
+ }
+ .custom-pagination-container .selected a {
+  color: #1BA9F5;
+  text-decoration: underline;
+  cursor: default;
+}
 
 .custom-overlay {
   display: flex;
   align-items: flex-start;
   padding: 10px;
-  background-color: #fff;
   position: fixed;
   top: 35px;
   left: 0;
@@ -52,3 +58,10 @@
   overflow-x: hidden;
 }
 
+.custom-overlay-light {
+  background-color: #fff;
+}
+
+.custom-overlay-dark {
+  background-color: #16171c;
+}

@@ -25,7 +25,13 @@ import ReactPaginate from 'react-paginate';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-import './pagination.scss';
+import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
+
+import './data_table.scss';
+
+// theme
+import { uiSettingsService } from '../../../../../common/utils';
+import { string } from 'joi';
 
 export const DataTable = ({ visualizations }: any) => {
   const {
@@ -84,19 +90,16 @@ export const DataTable = ({ visualizations }: any) => {
   }, [data, pagination]);
 
   // same columns modified
-  const columns = fields.map((field) => {
+  const [columnAlignment, setColumnAlignment] = useState('Left');
+  const columns = fields.map((field:any) => {
     return {
       headerName: field.name,
       field: field.name,
       id: field.name,
+      // type: `${columnAlignment.toLowerCase()}Aligned` ,      
       columnsMenuParams: {
-        // hides the Column Filter section
         suppressColumnFilter: true,
-
-        // hides the Select / Un-select all widget
         suppressColumnSelectAll: true,
-
-        // hides the Expand / Collapse all widget
         suppressColumnExpandAll: true,
       },
     };
@@ -137,10 +140,10 @@ export const DataTable = ({ visualizations }: any) => {
       filter: true,
       flex: 1,
       minWidth: 100,
-      // autoHeight: true,
       suppressMenu: true,
+      cellStyle: { textAlign: columnAlignment.toLowerCase() },
     };
-  }, []);
+  }, [columnAlignment]);
 
   const onPageSizeChanged = useCallback((val) => {
     setPageSize(val);
@@ -193,8 +196,9 @@ export const DataTable = ({ visualizations }: any) => {
   };
 
   const setIsFullScreenHandler = (val: boolean) => {
-    console.log('@setIsFullScreenHandler == val', val);
     setIsFullScreen(val);
+    // const myGrid = document.getElementById('myGrid');
+    // myGrid?.webkitRequestFullscreen();
   };
 
   useEffect(() => {
@@ -212,6 +216,7 @@ export const DataTable = ({ visualizations }: any) => {
     }
   };
 
+  console.log('columnAlignment===', columnAlignment);
   return (
     <>
       {/* <EuiDataGrid
@@ -237,8 +242,10 @@ export const DataTable = ({ visualizations }: any) => {
         columnVisiblityHandler={columnVisiblityHandler}
         columns={columns}
         columnVisibility={columnVisibility}
+        columnAlignment={columnAlignment}
+        setColumnAlignment={setColumnAlignment}
       />
-      <div style={{ height: '500px' }}>
+      <div style={{ height: '460px' }}>
         <AgGridReact
           ref={gridRef}
           rowData={raw_data}
@@ -249,7 +256,7 @@ export const DataTable = ({ visualizations }: any) => {
           enableRangeSelection={true}
           pagination={true}
           // domLayout={'autoHeight'}
-          paginationPageSize={pageSize}
+          paginationPageSize={50}
           paginationNumberFormatter={paginationNumberFormatter}
           suppressPaginationPanel={true}
           rowHeight={selectedRowDensity.height}
@@ -274,6 +281,8 @@ export const DataTable = ({ visualizations }: any) => {
                 columnVisiblityHandler={columnVisiblityHandler}
                 columns={columns}
                 columnVisibility={columnVisibility}
+                columnAlignment={columnAlignment}
+                setColumnAlignment={setColumnAlignment}
               />
             </EuiFlexItem>
             <EuiFlexItem>
@@ -312,7 +321,17 @@ export const DataTable = ({ visualizations }: any) => {
 };
 
 const CustomOverlay = ({ children }: { children: any }) => {
-  return <div className="custom-overlay">{children}</div>;
+  return (
+    <div
+      className={
+        uiSettingsService.get('theme:darkMode')
+          ? 'custom-overlay custom-overlay-dark'
+          : 'custom-overlay custom-overlay-light'
+      }
+    >
+      {children}
+    </div>
+  );
 };
 
 const GridHeader = ({
@@ -323,6 +342,8 @@ const GridHeader = ({
   columnVisiblityHandler,
   columns,
   columnVisibility,
+  columnAlignment,
+  setColumnAlignment,
 }: {
   isFullScreen: boolean;
   setIsFullScreenHandler: (v: boolean) => void;
@@ -331,6 +352,8 @@ const GridHeader = ({
   columnVisiblityHandler: (visible: boolean, feild: any) => void;
   columns: any;
   columnVisibility: any;
+  columnAlignment: string;
+  setColumnAlignment: (val: string) => void;
 }) => {
   return (
     <>
@@ -363,6 +386,9 @@ const GridHeader = ({
           >
             Full screen
           </EuiButtonEmpty>
+        </EuiFlexItem>
+        <EuiFlexItem style={{ maxWidth: '150px' }}>
+          <AlignPopover columnAlignment={columnAlignment} setColumnAlignment={setColumnAlignment} />
         </EuiFlexItem>
         {isFullScreen && (
           <EuiIcon
@@ -401,7 +427,11 @@ const GridFooter = ({
       </EuiFlexItem>
       <EuiFlexItem grow={false}>
         <ReactPaginate
-          containerClassName="custom-pagination-container"
+          containerClassName={
+            uiSettingsService.get('theme:darkMode')
+              ? `custom-pagination-container dark-theme`
+              : `custom-pagination-container`
+          }
           breakLabel="..."
           nextLabel={<EuiIcon type="arrowRight" />}
           forcePage={activePage}
@@ -455,6 +485,50 @@ const DensityPopover = ({
               onClick={() => selectDensityHandler(i)}
               display={selectedDensity.icon === i.icon ? 'fill' : 'base'}
               iconType={i.icon}
+              aria-label="Next"
+            />
+          </EuiFlexItem>
+        ))}
+      </EuiFlexGroup>
+    </EuiPopover>
+  );
+};
+
+const AlignPopover = ({
+  columnAlignment,
+  setColumnAlignment,
+}: {
+  columnAlignment: string;
+  setColumnAlignment: (data: any) => void;
+}) => {
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  const onButtonClick = () => setIsPopoverOpen((isPopoverOpen) => !isPopoverOpen);
+  const closePopover = () => setIsPopoverOpen(false);
+
+  const button = (
+    <EuiButtonEmpty
+      iconSize="s"
+      color="text"
+      aria-label="Next"
+      iconType={`editorAlign${columnAlignment}`}
+      onClick={onButtonClick}
+    >
+      Align
+    </EuiButtonEmpty>
+  );
+
+  const align = ['Left', 'Center', 'Right'];
+
+  return (
+    <EuiPopover button={button} isOpen={isPopoverOpen} closePopover={closePopover}>
+      <EuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
+        {align.map((i: any, index: number) => (
+          <EuiFlexItem key={index} grow={false}>
+            <EuiButtonIcon
+              onClick={() => setColumnAlignment(i)}
+              display={columnAlignment === i ? 'fill' : 'base'}
+              iconType={`editorAlign${i}`}
               aria-label="Next"
             />
           </EuiFlexItem>
