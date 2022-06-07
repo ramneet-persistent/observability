@@ -10,10 +10,14 @@ import { LensIconChartDatatable } from '../../assets/chart_datatable';
 import { ConfigValueOptions } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls';
 import { VizDataPanel } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/default_vis_editor';
 
-import { ColumnAlignment } from "./data_table"
-
+import {
+  ConfigGridColumns
+} from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_grid_columns';
+import {  DefaultTableProperties } from '../../../../../common/constants/shared';
 
 const VIS_CATEGORY = getPlotlyCategory();
+
+const { ColumnAlignment } =   DefaultTableProperties
 
 export const createDatatableTypeDefinition = (params: any = {}) => ({
   name: 'data_table',
@@ -29,15 +33,15 @@ export const createDatatableTypeDefinition = (params: any = {}) => ({
   icon: LensIconChartDatatable,
   editorConfig: {
     editor: null,
-    schemas: [
-      {
-        name: 'Columns',
-        isSingleSelection: true,
-        onChangeHandler: 'setXaxisSelections',
-        component: null,
-        mapTo: 'xaxis',
-      },
-    ],
+    // schemas: [
+    //   {
+    //     name: 'Columns',
+    //     isSingleSelection: true,
+    //     onChangeHandler: 'setXaxisSelections',
+    //     component: null,
+    //     mapTo: 'xaxis',
+    //   },
+    // ],
     panelTabs: [
       {
         id: 'data-panel',
@@ -46,27 +50,29 @@ export const createDatatableTypeDefinition = (params: any = {}) => ({
         editor: VizDataPanel,
         sections: [
           {
-            id: 'value_options',
-            name: 'Value options',
-            editor: ConfigValueOptions,
-            mapTo: 'valueOptions',
+            id: 'columns',
+            name: 'Columns',
+            editor: ConfigGridColumns,
+            mapTo: 'columns',
             schemas: [
-              // {
-              //   name: 'X-axis',
-              //   isSingleSelection: false,
-              //   component: null,
-              //   mapTo: 'xaxis',
-              // },
               {
                 name: 'Column Alignment',
-                isSingleSelection: true,
-                component: ColumnAlignment,
-                mapTo: 'xaxis',
+                mapTo: 'columnAlignment',
+                component: null,
+                props: {
+                  options: [
+                    { name: 'Left', id: 'left' },
+                    { name: 'Center', id: 'center' },
+                    { name: 'Right', id: 'right' },
+                  ],
+                  defaultSelections: [{ name: 'Left', id: ColumnAlignment }],
+                },
               },
             ],
           },
         ],
       },
+     
     ],
   },
   component: DataTable,

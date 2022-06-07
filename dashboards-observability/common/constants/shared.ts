@@ -150,3 +150,11 @@ export const LIVE_OPTIONS = [
 ];
 
 export const LIVE_END_TIME ='now';
+
+export interface DefaultTablePropertiesProps {
+  ColumnAlignment: string;
+}
+
+export const  DefaultTableProperties: DefaultTablePropertiesProps = {
+  ColumnAlignment: 'left',
+};

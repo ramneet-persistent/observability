@@ -9,19 +9,16 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiButtonEmpty,
-  EuiDataGrid,
   EuiPopover,
   EuiSwitch,
   EuiIcon,
   EuiContextMenuPanel,
   EuiContextMenuItem,
-  EuiOverlayMask,
-  EuiModal,
-  EuiModalBody,
-  EuiButtonGroup,
-  EuiSpacer,
-  EuiTitle,
 } from '@elastic/eui';
+
+import { DefaultTableProperties } from '../../../../../common/constants/shared';
+
+// pagination
 import ReactPaginate from 'react-paginate';
 
 // af-data-grid
@@ -30,70 +27,26 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine-dark.css';
 
+// styles
 import './data_table.scss';
 
 // theme
 import { uiSettingsService } from '../../../../../common/utils';
 import { string } from 'joi';
 
-export const DataTable = ({ visualizations }: any) => {
+export const DataTable = ({ visualizations, layout, config }: any) => {
+  const { ColumnAlignment } = DefaultTableProperties;
   const {
     data: vizData,
     jsonData,
     metadata: { fields = [] },
   } = visualizations.data.rawVizData;
+  const { dataConfig = {}, layoutConfig = {} } = visualizations?.data?.userConfigs;
 
+  console.log('dataConfig @data_table ===', dataConfig);
+  const columnAlignment = dataConfig?.columns?.columnAlignment || ColumnAlignment;
+  console.log("columnAlignment=======", columnAlignment)
   const raw_data = [...jsonData];
-
-  // Pagination
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const onChangePage = useCallback(
-    (pageIndex) => setPagination((pagination) => ({ ...pagination, pageIndex })),
-    [setPagination]
-  );
-  const onChangeItemsPerPage = useCallback(
-    (pageSize) =>
-      setPagination((pagination) => ({
-        ...pagination,
-        pageSize,
-        pageIndex: 0,
-      })),
-    [setPagination]
-  );
-  // Sorting
-  const [sortingColumns, setSortingColumns] = useState([]);
-  const onSort = useCallback(
-    (sortingColumns) => {
-      setSortingColumns(sortingColumns);
-    },
-    [setSortingColumns]
-  );
-
-  // Sort data
-  let data = useMemo(() => {
-    return [...raw_data].sort((a, b) => {
-      for (let i = 0; i < sortingColumns.length; i++) {
-        const column = sortingColumns[i];
-        const aValue = a[column.id];
-        const bValue = b[column.id];
-
-        if (aValue < bValue) return column.direction === 'asc' ? -1 : 1;
-        if (aValue > bValue) return column.direction === 'asc' ? 1 : -1;
-      }
-
-      return 0;
-    });
-  }, [sortingColumns]);
-
-  // Pagination
-  data = useMemo(() => {
-    const rowStart = pagination.pageIndex * pagination.pageSize;
-    const rowEnd = Math.min(rowStart + pagination.pageSize, data.length);
-    return data.slice(rowStart, rowEnd);
-  }, [data, pagination]);
-
-  // same columns modified
-  const [columnAlignment, setColumnAlignment] = useState('Left');
   const columns = fields.map((field: any) => {
     return {
       headerName: field.name,
@@ -107,21 +60,6 @@ export const DataTable = ({ visualizations }: any) => {
       },
     };
   });
-
-  // Column visibility
-  const [visibleColumns, setVisibleColumns] = useState(columns.map(({ id }) => id));
-
-  const renderCellValue = useMemo(() => {
-    return ({ rowIndex, columnId }) => {
-      let adjustedRowIndex = rowIndex;
-
-      // If we are doing the pagination (instead of leaving that to the grid)
-      // then the row index must be adjusted as `data` has already been pruned to the page size
-      adjustedRowIndex = rowIndex - pagination.pageIndex * pagination.pageSize;
-
-      return data.hasOwnProperty(adjustedRowIndex) ? data[adjustedRowIndex][columnId] : null;
-    };
-  }, [data, pagination.pageIndex, pagination.pageSize]);
 
   // ag-grid-react bindings
   const gridRef = useRef<any | undefined>();
@@ -219,24 +157,8 @@ export const DataTable = ({ visualizations }: any) => {
     }
   };
 
-  console.log('columnAlignment===', columnAlignment);
   return (
     <>
-      {/* <EuiDataGrid
-        aria-label="viz data table"
-        data-test-subj="workspace__dataTable"
-        columns={columns}
-        columnVisibility={{ visibleColumns, setVisibleColumns }}
-        rowCount={raw_data.length}
-        renderCellValue={renderCellValue}
-        sorting={{ columns: sortingColumns, onSort }}
-        pagination={{
-          ...pagination,
-          pageSizeOptions: [10, 50, 100],
-          onChangeItemsPerPage,
-          onChangePage,
-        }}
-      /> */}
       <GridHeader
         isFullScreen={isFullScreen}
         setIsFullScreenHandler={setIsFullScreenHandler}
@@ -245,8 +167,6 @@ export const DataTable = ({ visualizations }: any) => {
         columnVisiblityHandler={columnVisiblityHandler}
         columns={columns}
         columnVisibility={columnVisibility}
-        columnAlignment={columnAlignment}
-        setColumnAlignment={setColumnAlignment}
       />
       <div style={{ height: '460px' }}>
         <AgGridReact
@@ -284,8 +204,6 @@ export const DataTable = ({ visualizations }: any) => {
                 columnVisiblityHandler={columnVisiblityHandler}
                 columns={columns}
                 columnVisibility={columnVisibility}
-                columnAlignment={columnAlignment}
-                setColumnAlignment={setColumnAlignment}
               />
             </EuiFlexItem>
             <EuiFlexItem>
@@ -345,8 +263,6 @@ const GridHeader = ({
   columnVisiblityHandler,
   columns,
   columnVisibility,
-  columnAlignment,
-  setColumnAlignment,
 }: {
   isFullScreen: boolean;
   setIsFullScreenHandler: (v: boolean) => void;
@@ -355,8 +271,6 @@ const GridHeader = ({
   columnVisiblityHandler: (visible: boolean, feild: any) => void;
   columns: any;
   columnVisibility: any;
-  columnAlignment: string;
-  setColumnAlignment: (val: string) => void;
 }) => {
   return (
     <>
@@ -389,9 +303,6 @@ const GridHeader = ({
           >
             Full screen
           </EuiButtonEmpty>
-        </EuiFlexItem>
-        <EuiFlexItem style={{ maxWidth: '150px' }}>
-          <AlignPopover columnAlignment={columnAlignment} setColumnAlignment={setColumnAlignment} />
         </EuiFlexItem>
         {isFullScreen && (
           <EuiIcon
@@ -643,27 +554,5 @@ const PageSizePopover = ({
     >
       <EuiContextMenuPanel items={items()} />
     </EuiPopover>
-  );
-};
-
-export const ColumnAlignment = () => {
-  const align_options = ['Auto', 'Left', 'Center', 'Right'];
-  return (
-    <EuiButtonGroup
-      name="coarsness"
-      legend="This is a basic group"
-      options={align_options.map((i) => {
-        return {
-          id: i.toLowerCase(),
-          label: i,
-        };
-      })}
-      idSelected={'auto'}
-      onChange={(e) => {
-        console.log('on Change----e', e);
-      }}
-      buttonSize="compressed"
-      isFullWidth
-    />
   );
 };
