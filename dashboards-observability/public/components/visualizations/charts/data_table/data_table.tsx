@@ -18,6 +18,9 @@ import {
   EuiOverlayMask,
   EuiModal,
   EuiModalBody,
+  EuiButtonGroup,
+  EuiSpacer,
+  EuiTitle,
 } from '@elastic/eui';
 import ReactPaginate from 'react-paginate';
 
@@ -91,12 +94,12 @@ export const DataTable = ({ visualizations }: any) => {
 
   // same columns modified
   const [columnAlignment, setColumnAlignment] = useState('Left');
-  const columns = fields.map((field:any) => {
+  const columns = fields.map((field: any) => {
     return {
       headerName: field.name,
       field: field.name,
       id: field.name,
-      // type: `${columnAlignment.toLowerCase()}Aligned` ,      
+      // type: `${columnAlignment.toLowerCase()}Aligned` ,
       columnsMenuParams: {
         suppressColumnFilter: true,
         suppressColumnSelectAll: true,
@@ -494,7 +497,7 @@ const DensityPopover = ({
   );
 };
 
-const AlignPopover = ({
+export const AlignPopover = ({
   columnAlignment,
   setColumnAlignment,
 }: {
@@ -640,5 +643,27 @@ const PageSizePopover = ({
     >
       <EuiContextMenuPanel items={items()} />
     </EuiPopover>
+  );
+};
+
+export const ColumnAlignment = () => {
+  const align_options = ['Auto', 'Left', 'Center', 'Right'];
+  return (
+    <EuiButtonGroup
+      name="coarsness"
+      legend="This is a basic group"
+      options={align_options.map((i) => {
+        return {
+          id: i.toLowerCase(),
+          label: i,
+        };
+      })}
+      idSelected={'auto'}
+      onChange={(e) => {
+        console.log('on Change----e', e);
+      }}
+      buttonSize="compressed"
+      isFullWidth
+    />
   );
 };

@@ -13,13 +13,20 @@ export const ConfigValueOptions = ({
   vizState,
   handleConfigChange,
   sectionName,
-  sectionId = 'valueOptions'
+  sectionId = 'valueOptions',
 }: any) => {
+  console.log("vizState ====", vizState)
   const { data } = visualizations;
   const { data: vizData = {}, metadata: { fields = [] } = {} } = data?.rawVizData;
   const handleConfigurationChange = useCallback(
     (stateFiledName) => {
       return (changes) => {
+        console.log(
+          'in handleConfigurationChange=== stateFiledName',
+          stateFiledName,
+          'changes',
+          changes
+        );
         handleConfigChange({
           ...vizState,
           [stateFiledName]: changes,

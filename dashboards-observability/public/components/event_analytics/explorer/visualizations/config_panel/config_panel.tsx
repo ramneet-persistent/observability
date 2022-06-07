@@ -206,6 +206,7 @@ export const ConfigPanel = ({ visualizations, setCurVisId, callback, changeIsVal
   };
 
   const onTabClick = (selectedTab: EuiTabbedContentTab) => {
+    console.log("on tab click ====",selectedTab )
     setCurrTabId(selectedTab.id);
   };
 
@@ -278,6 +279,7 @@ export const ConfigPanel = ({ visualizations, setCurVisId, callback, changeIsVal
         </EuiFlexItem>
         <EuiFlexItem>
           <EuiPanel paddingSize="s">
+            tab content=====
             <EuiTabbedContent
               className="vis-config-tabs"
               tabs={tabs}
@@ -287,6 +289,7 @@ export const ConfigPanel = ({ visualizations, setCurVisId, callback, changeIsVal
           </EuiPanel>
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
+          default editor panels=====
           <DefaultEditorControls
             isDirty={true}
             isInvalid={false}
