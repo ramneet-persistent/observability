@@ -7,17 +7,18 @@ import { DataTable } from './data_table';
 import { getPlotlyCategory } from '../shared/shared_configs';
 import { LensIconChartDatatable } from '../../assets/chart_datatable';
 
-import { ConfigValueOptions } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls';
-import { VizDataPanel } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/default_vis_editor';
-
 import {
-  ConfigGridColumns
-} from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_grid_columns';
-import {  DefaultTableProperties } from '../../../../../common/constants/shared';
+  ConfigInputField,
+  ConfigGridColumns,
+  ConfigColorTheme
+} from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls';
+import { VizDataPanel } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/default_vis_editor';
+import { ConfigEditor } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/json_editor';
+import { DefaultTableProperties } from '../../../../../common/constants/shared';
 
 const VIS_CATEGORY = getPlotlyCategory();
 
-const { ColumnAlignment } =   DefaultTableProperties
+const { ColumnAlignment } = DefaultTableProperties;
 
 export const createDatatableTypeDefinition = (params: any = {}) => ({
   name: 'data_table',
@@ -61,6 +62,7 @@ export const createDatatableTypeDefinition = (params: any = {}) => ({
                 component: null,
                 props: {
                   options: [
+                    // { name: 'Auto', id: 'auto' },
                     { name: 'Left', id: 'left' },
                     { name: 'Center', id: 'center' },
                     { name: 'Right', id: 'right' },
@@ -68,11 +70,24 @@ export const createDatatableTypeDefinition = (params: any = {}) => ({
                   defaultSelections: [{ name: 'Left', id: ColumnAlignment }],
                 },
               },
+              {
+                name: 'Column Width',
+                mapTo: 'columnWidth',
+                component: ConfigInputField,
+                currentValue: 200,
+                eleType: 'input',
+              },
+              // {
+              //   id: 'color-theme',
+              //   name: 'Color Theme',
+              //   editor: ConfigColorTheme,
+              //   mapTo: 'colorTheme',
+              //   schemas: [],
+              // },
             ],
           },
         ],
       },
-     
     ],
   },
   component: DataTable,

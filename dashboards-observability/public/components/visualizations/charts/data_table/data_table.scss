@@ -65,3 +65,15 @@
 .custom-overlay-dark {
   background-color: #16171c;
 }
+
+.text-center .ag-header-cell-label {
+  justify-content: center;
+}
+
+.text-right .ag-header-cell-label {
+  justify-content: flex-end;
+}
+
+.text-left .ag-header-cell-label {
+  justify-content: flex-start;
+}

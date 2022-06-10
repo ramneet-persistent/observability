@@ -33,6 +33,7 @@ export const ConfigGridColumns = ({ schemas, vizState, handleConfigChange }: any
         })),
         idSelected: vizState[schema.mapTo] || schema?.props?.defaultSelections[0]?.id,
         handleButtonChange: handleConfigurationChange(schema.mapTo),
+        handleInputChange: handleConfigurationChange(schema.mapTo),
         vizState,
         ...schema.props,
       };
@@ -46,7 +47,7 @@ export const ConfigGridColumns = ({ schemas, vizState, handleConfigChange }: any
   }, [schemas, vizState, handleConfigurationChange]);
 
   return (
-    <EuiAccordion initialIsOpen id="configPanel__legend" buttonContent="Table" paddingSize="s">
+    <EuiAccordion initialIsOpen id="configPanel__legend" buttonContent="Table Layout" paddingSize="s">
       {dimensions}
     </EuiAccordion>
   );

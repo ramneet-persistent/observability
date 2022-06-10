@@ -65,6 +65,7 @@ export const ConfigPanel = ({ visualizations, setCurVisId, callback, changeIsVal
   const { tabId, curVisId, dispatch, changeVisualizationConfig, setToast } = useContext<any>(
     TabContext
   );
+
   const { data, vis } = visualizations;
   const { userConfigs } = data;
 
@@ -126,7 +127,8 @@ export const ConfigPanel = ({ visualizations, setCurVisId, callback, changeIsVal
       bar: isValidValueOptionsXYAxes,
       line: isValidValueOptionsXYAxes,
       histogram: isValidValueOptionsXYAxes,
-      pie: isValidValueOptionsXYAxes
+      pie: isValidValueOptionsXYAxes,
+      data_table: true
     }
     return isValid_valueOptions[curVisId];
   }, [vizConfigs.dataConfig]);
@@ -206,7 +208,6 @@ export const ConfigPanel = ({ visualizations, setCurVisId, callback, changeIsVal
   };
 
   const onTabClick = (selectedTab: EuiTabbedContentTab) => {
-    console.log("on tab click ====",selectedTab )
     setCurrTabId(selectedTab.id);
   };
 

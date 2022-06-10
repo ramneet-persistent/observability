@@ -14,6 +14,9 @@ import {
   EuiIcon,
   EuiContextMenuPanel,
   EuiContextMenuItem,
+  EuiText,
+  EuiIconTip,
+  EuiTextAlign,
 } from '@elastic/eui';
 
 import { DefaultTableProperties } from '../../../../../common/constants/shared';
@@ -42,16 +45,23 @@ export const DataTable = ({ visualizations, layout, config }: any) => {
     metadata: { fields = [] },
   } = visualizations.data.rawVizData;
   const { dataConfig = {}, layoutConfig = {} } = visualizations?.data?.userConfigs;
-
+  // console.log("panelOptions====", panelOptions)
   console.log('dataConfig @data_table ===', dataConfig);
+  const title = dataConfig?.panelOptions?.title;
+  const description = dataConfig?.panelOptions?.description;
+  console.log('title ===', title, 'description ==', description);
   const columnAlignment = dataConfig?.columns?.columnAlignment || ColumnAlignment;
-  console.log("columnAlignment=======", columnAlignment)
+  const columnWidth = +dataConfig?.columns?.columnWidth || 150;
+  console.log('columnAlignment=======', columnAlignment, ' width: columnWidth,', columnWidth);
   const raw_data = [...jsonData];
   const columns = fields.map((field: any) => {
     return {
       headerName: field.name,
       field: field.name,
       id: field.name,
+      width: columnWidth,
+      // headerClass: `text-${columnAlignment.toLowerCase()}`,
+      // cellStyle: { color: 'red', 'background-color': 'beige',  },
       // type: `${columnAlignment.toLowerCase()}Aligned` ,
       columnsMenuParams: {
         suppressColumnFilter: true,
@@ -82,9 +92,23 @@ export const DataTable = ({ visualizations, layout, config }: any) => {
       flex: 1,
       minWidth: 100,
       suppressMenu: true,
+      headerClass: `text-${columnAlignment.toLowerCase()}`,
       cellStyle: { textAlign: columnAlignment.toLowerCase() },
     };
   }, [columnAlignment]);
+
+  useEffect(() => {
+    console.log('width ====', columnWidth);
+    if (dataConfig?.columns?.columnWidth) {
+      console.log('ooooooooooo');
+      columns.forEach((def: any) =>
+        gridRef?.current?.columnApi?.setColumnWidth(def.field, columnWidth)
+      );
+    } else {
+      console.log('no width === ', gridRef.current);
+      gridRef?.current?.api?.sizeColumnsToFit();
+    }
+  }, [columnWidth]);
 
   const onPageSizeChanged = useCallback((val) => {
     setPageSize(val);
@@ -107,10 +131,12 @@ export const DataTable = ({ visualizations, layout, config }: any) => {
     gridRef.current.api.onRowHeightChanged();
   }, []);
 
-  // const onGridReady = useCallback((params) => {
-  //   // gridRef.current.api.setDomLayout('autoHeight');
-
-  // }, []);
+  const onGridReady = useCallback((params) => {
+    console.log(' onGridReady={onGridReady}', gridRef.current.columnApi.getColumnState());
+    // columnApi.applyColumnState
+    // gridRef.current.api.setDomLayout('autoHeight');
+    // getColumnState
+  }, []);
 
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
 
@@ -159,6 +185,27 @@ export const DataTable = ({ visualizations, layout, config }: any) => {
 
   return (
     <>
+      <EuiFlexGroup
+        responsive={true}
+        gutterSize="none"
+        justifyContent="flexStart"
+        style={{ position: 'relative' }}
+      >
+        {description && (
+          <EuiFlexItem grow={false}>
+            <EuiIconTip content={description} type="iInCircle" position="right" />
+          </EuiFlexItem>
+        )}
+        {title && (
+          <EuiFlexItem>
+            <EuiText>
+              <EuiTextAlign textAlign="center">
+                <h5>{title}</h5>
+              </EuiTextAlign>
+            </EuiText>
+          </EuiFlexItem>
+        )}
+      </EuiFlexGroup>
       <GridHeader
         isFullScreen={isFullScreen}
         setIsFullScreenHandler={setIsFullScreenHandler}
@@ -183,6 +230,8 @@ export const DataTable = ({ visualizations, layout, config }: any) => {
           paginationNumberFormatter={paginationNumberFormatter}
           suppressPaginationPanel={true}
           rowHeight={selectedRowDensity.height}
+          // onColumnResized={onColumnResized}
+          onGridReady={onGridReady}
         />
       </div>
       <GridFooter
@@ -222,6 +271,7 @@ export const DataTable = ({ visualizations, layout, config }: any) => {
                   paginationNumberFormatter={paginationNumberFormatter}
                   suppressPaginationPanel={true}
                   rowHeight={selectedRowDensity.height}
+                  onGridReady={onGridReady}
                 />
               </div>
             </EuiFlexItem>
