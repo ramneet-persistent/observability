@@ -11,10 +11,13 @@ import { NUMERICAL_FIELDS } from '../../../../../../common/constants/shared';
 import { PLOTLY_GAUGE_COLUMN_NUMBER } from '../../../../../../common/constants/explorer';
 
 export const Gauge = ({ visualizations, layout, config }: any) => {
+  console.log("GUAGE ===== CHART")
   const {
     data,
     metadata: { fields },
   } = visualizations.data.rawVizData;
+
+  console.log("fields ====", fields)
 
   const { dataConfig = {}, layoutConfig = {} } = visualizations.data.userConfigs;
 
@@ -23,11 +26,13 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
       ? dataConfig.valueOptions.series
       : [];
 
+  console.log("series ===", series)
+
   const value =
     dataConfig?.valueOptions && dataConfig?.valueOptions?.value
       ? dataConfig.valueOptions.value
       : [];
-
+console.log("valuesss ===", value)
   const thresholds = dataConfig?.thresholds || [];
 
   const gaugeData: Plotly.Data[] = useMemo(() => {
@@ -53,6 +58,8 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
           });
         });
       }
+
+      console.log("calculatedGaugeData=====", calculatedGaugeData)
 
       return calculatedGaugeData.map((gauge, index) => {
         return {
@@ -101,5 +108,6 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
     ...(layoutConfig.config && layoutConfig.config),
   };
 
+  console.log("gaugeData===", gaugeData)
   return <Plt data={gaugeData} layout={mergedLayout} config={mergedConfigs} />;
 };
