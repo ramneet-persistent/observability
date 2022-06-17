@@ -11,13 +11,10 @@ import { NUMERICAL_FIELDS } from '../../../../../../common/constants/shared';
 import { PLOTLY_GAUGE_COLUMN_NUMBER } from '../../../../../../common/constants/explorer';
 
 export const Gauge = ({ visualizations, layout, config }: any) => {
-  console.log("GUAGE ===== CHART")
   const {
     data,
     metadata: { fields },
   } = visualizations.data.rawVizData;
-
-  console.log("fields ====", fields)
 
   const { dataConfig = {}, layoutConfig = {} } = visualizations.data.userConfigs;
 
@@ -26,14 +23,13 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
       ? dataConfig.valueOptions.series
       : [];
 
-  console.log("series ===", series)
-
   const value =
     dataConfig?.valueOptions && dataConfig?.valueOptions?.value
       ? dataConfig.valueOptions.value
       : [];
-console.log("valuesss ===", value)
   const thresholds = dataConfig?.thresholds || [];
+  const titleSize = dataConfig?.chartStyles?.titleSize || 14
+  const valueSize = dataConfig?.chartStyles?.valueSize || 24
 
   const gaugeData: Plotly.Data[] = useMemo(() => {
     let calculatedGaugeData: Plotly.Data[] = [];
@@ -59,8 +55,6 @@ console.log("valuesss ===", value)
         });
       }
 
-      console.log("calculatedGaugeData=====", calculatedGaugeData)
-
       return calculatedGaugeData.map((gauge, index) => {
         return {
           type: 'indicator',
@@ -68,7 +62,12 @@ console.log("valuesss ===", value)
           value: gauge.value || 0,
           title: {
             text: gauge.field_name,
-            font: { size: 14 },
+            font: { size: titleSize },
+          },
+          number: {
+            font: {
+              size: valueSize
+            }
           },
           domain: {
             row: Math.floor(index / PLOTLY_GAUGE_COLUMN_NUMBER),
@@ -87,7 +86,7 @@ console.log("valuesss ===", value)
       });
     }
     return calculatedGaugeData;
-  }, [series, value, data, fields, thresholds]);
+  }, [series, value, data, fields, thresholds, titleSize, valueSize]);
 
   const mergedLayout = useMemo(() => {
     const isAtleastOneFullRow = Math.floor(gaugeData.length / PLOTLY_GAUGE_COLUMN_NUMBER) > 0;
@@ -108,6 +107,5 @@ console.log("valuesss ===", value)
     ...(layoutConfig.config && layoutConfig.config),
   };
 
-  console.log("gaugeData===", gaugeData)
   return <Plt data={gaugeData} layout={mergedLayout} config={mergedConfigs} />;
 };

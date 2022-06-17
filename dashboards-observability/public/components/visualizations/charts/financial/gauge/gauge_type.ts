@@ -12,6 +12,8 @@ import {
   ConfigValueOptions,
   ConfigThresholds,
   ConfigGaugeValueOptions,
+  ConfigChartOptions,
+  ConfigInputField,
 } from '../../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls';
 
 const sharedConfigs = getPlotlySharedConfigs();
@@ -57,6 +59,28 @@ export const createGaugeTypeDefinition = (params: any = {}) => ({
                 onChangeHandler: 'setYaxisSelections',
                 component: null,
                 mapTo: 'value',
+              },
+            ],
+          },
+          {
+            id: 'chart-styles',
+            name: 'Chart styles',
+            editor: ConfigChartOptions,
+            mapTo: 'chartStyles',
+            schemas: [
+              {
+                title: 'Title Size',
+                name: 'Title Size',
+                component: ConfigInputField,
+                mapTo: 'titleSize',
+                eleType: 'input',
+              },
+              {
+                title: 'Value Size',
+                name: 'Value Size',
+                component: ConfigInputField,
+                mapTo: 'valueSize',
+                eleType: 'input',
               },
             ],
           },
