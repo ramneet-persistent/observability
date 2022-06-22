@@ -10,6 +10,7 @@ import { Plt } from '../../../plotly/plot';
 import { NUMERICAL_FIELDS } from '../../../../../../common/constants/shared';
 import { PLOTLY_GAUGE_COLUMN_NUMBER } from '../../../../../../common/constants/explorer';
 import { DefaultGaugeChartSyles } from '../../../../../../common/constants/shared';
+import { ThresholdUnitType } from '../../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_thresholds';
 
 export const Gauge = ({ visualizations, layout, config }: any) => {
   const {
@@ -30,7 +31,6 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
     dataConfig?.valueOptions && dataConfig?.valueOptions?.value
       ? dataConfig.valueOptions.value
       : [];
-  console.log('valuess===', value);
 
   const { TitleSize, ValueSize } = DefaultGaugeChartSyles;
   const thresholds = dataConfig?.thresholds || [];
@@ -40,32 +40,87 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
   const valueSize = dataConfig?.chartStyles?.valueSize || ValueSize;
   const showThresholdMarkers = dataConfig?.chartStyles?.showThresholdMarkers || false;
   const showThresholdLabels = dataConfig?.chartStyles?.showThresholdLabels || false;
+  // const slicedData = data.slice(0, 10)
 
   console.log('fields ====', fields);
   console.log('series ===', series);
+  console.log('value===', value);
+  console.log('thresholds===', thresholds);
 
   const gaugeData: Plotly.Data[] = useMemo(() => {
     let calculatedGaugeData: Plotly.Data[] = [];
-    if (series && series[0] && value && value[0]) {
+    // if (series && series[0] && value && value[0]) {
+    if (series && series[0]) {
+      console.log('data===', data);
+      console.log('fields ====', fields);
+      console.log('series ===', series);
+      console.log('value===', value);
+      console.log('thresholds===', thresholds);
+
+      console.log('series[0].type===', series[0].type);
+      console.log('is NUMERIC==', indexOf(NUMERICAL_FIELDS, series[0].type));
       if (indexOf(NUMERICAL_FIELDS, series[0].type) > 0) {
-        calculatedGaugeData = [
-          ...data[value[0].name].map((dimesionSlice, index) => ({
-            field_name: dimesionSlice,
-            value: data[series[0].name][index],
-          })),
-        ];
+        console.log('selected series is numeric ====');
+        if (value && value[0]) {
+          console.log('value is selected ====', value);
+          calculatedGaugeData = [
+            ...data[value[0].name].map((dimesionSlice, index) => ({
+              field_name: dimesionSlice,
+              value: data[series[0].name][index],
+            })),
+          ];
+        } else {
+          console.log('no value seleceted =====');
+          calculatedGaugeData = [
+            ...data[series[0].name].slice(0, 10).map((dimesionSlice, index) => ({
+              field_name: dimesionSlice,
+              value: data[series[0].name][index],
+            })),
+          ];
+        }
       } else {
-        value.map((val) => {
-          const selectedSeriesIndex = indexOf(data[series[0].name], val.name);
-          fields.map((field) => {
-            if (field.name !== series[0].name) {
-              calculatedGaugeData.push({
-                field_name: field.name,
-                value: data[field.name][selectedSeriesIndex],
-              });
-            }
+        console.log('non numeric value is selected');
+        if (value && value[0]) {
+          console.log('value selected ====');
+          value.map((val) => {
+            console.log("val map ===",val)
+            const selectedSeriesIndex = indexOf(data[series[0].name], val.name);
+            console.log("selectedSeriesIndex===", selectedSeriesIndex)
+            fields.map((field) => {
+              console.log("in fields map ====field", field )
+              if (field.name !== series[0].name) {
+                calculatedGaugeData.push({
+                  field_name: field.name,
+                  value: data[field.name][selectedSeriesIndex],
+                });
+              }
+            });
           });
-        });
+        } else {
+          console.log('no value slected =====');
+          const values = data[series[0].name].slice(0, 10).map(i => {
+            return {
+              name: i,
+              type: series[0].type,
+              label: i
+            }
+          })
+          console.log("filters values from fields", values )
+          values.map((val) => {
+            console.log("val map ===",val)
+            const selectedSeriesIndex = indexOf(data[series[0].name], val.name);
+            console.log("selectedSeriesIndex===", selectedSeriesIndex)
+            fields.map((field) => {
+              console.log("in fields map ====field", field )
+              if (field.name !== series[0].name) {
+                calculatedGaugeData.push({
+                  field_name: field.name,
+                  value: data[field.name][selectedSeriesIndex],
+                });
+              }
+            });
+          });
+        }
       }
       console.log('calculatedGaugeData========', calculatedGaugeData);
       return calculatedGaugeData.map((gauge, index) => {
@@ -74,7 +129,7 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
           type: 'indicator',
           mode: 'gauge+number+delta',
           value: gauge.value || 0,
-          name: "HELLOOOO",
+          name: 'HELLOOOO',
           title: {
             text: gauge.field_name,
             font: { size: titleSize },
@@ -112,66 +167,46 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
             // },
 
             // custom gauge chart=========
-            axis: {
-              range: [null, 50],
-              tickwidth: 1,
-              tickcolor: 'darkblue',
-              ...(showThresholdLabels && thresholds && thresholds.length
-                ? {
-                    ticktext: [gauge.value, thresholds[0]?.value],
-                    tickvals: [gauge.value, thresholds[0]?.value],
-                    ticklen: 5,
-                  }
-                : {}),
-            },
-            // bar: { color: 'darkblue' },
-            // bgcolor: 'white',
-            // borderwidth: 2,
-            // bordercolor: 'gray',
 
-            steps: [
-              // {
-              //   range: [10, 12],
-              //   color: 'yellow',
-              //   // line: {
-              //   //   color: 'green',
-              //   //   width: 4,
-              //   // },
-              //   name: 'stepOne-min',
-              //   thickness: 0.75,
-              //   templateitemname: 'stepOne-min',
-              //   visible: true
-              // },
-              {
-                range: [10, 10.5],
-                color: 'red',
-                // line: {
-                //   color: 'blue',
-                //   width: 4,
-                // },
-                name: 'stepTwo-min',
-                // thickness: 0.75,
-                templateitemname: 'stepTwo-min',
-                visible: true
-              },
-              {
-                range: [24, 24.25],
-                color: 'blue',
-                // line: {
-                //   color: 'blue',
-                //   width: 4,
-                // },
-                name: 'stepTwo-min',
-                // thickness: 0.75,
-                // templateitemname: 'stepTwo-min',
-                visible: true
-              },
-            ],
-            // threshold: {
-            //   line: { color: 'cyan', width: 4 },
-            //   thickness: 0.75,
-            //   value: 22,
-            // },
+            // ...(thresholds &&
+            //   thresholds.length && {
+            //     steps : thresholds.map((threshold: ThresholdUnitType) => {
+            //       const value =Number(threshold.value)
+            //       return {
+            //         range: [0, value+ 0.25 ],
+            //         color: threshold.color || 'red',
+            //         name: threshold.name || '',
+            //         templateitemname: 'stepTwo-min',
+            //         visible: true
+            //       }
+            //     } )
+            //   }),
+            // steps: [
+            //   {
+            //     range: [10, 10.5],
+            //     color: 'red',
+            //     // line: {
+            //     //   color: 'blue',
+            //     //   width: 4,
+            //     // },
+            //     name: 'stepTwo-min',
+            //     // thickness: 0.75,
+            //     templateitemname: 'stepTwo-min',
+            //     visible: true
+            //   },
+            //   {
+            //     range: [24, 24.25],
+            //     color: 'blue',
+            //     // line: {
+            //     //   color: 'blue',
+            //     //   width: 4,
+            //     // },
+            //     name: 'stepTwo-min',
+            //     // thickness: 0.75,
+            //     // templateitemname: 'stepTwo-min',
+            //     visible: true
+            //   },
+            // ],
           },
         };
       });
@@ -200,12 +235,12 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
       ...layout,
       ...(layoutConfig.layout && layoutConfig.layout),
       title: dataConfig?.panelOptions?.title || layoutConfig.layout?.title || '',
-      showlegend:  true,
+      showlegend: true,
       xaxis: {
-        tickmode: "linear", //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
+        tickmode: 'linear', //  If "linear", the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick`
         tick0: 0,
-        dtick: 8
-      }
+        dtick: 8,
+      },
     };
   }, [layout, gaugeData.length, layoutConfig.layout, dataConfig?.panelOptions?.title]);
 
