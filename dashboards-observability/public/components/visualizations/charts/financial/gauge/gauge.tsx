@@ -161,31 +161,31 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
                   value: thresholds[0]?.value || 0,
                 },
               }),
-            // axis: {
-            //   ...(showThresholdLabels && thresholds && thresholds.length
-            //     ? {
-            //         ticktext: [gauge.value, thresholds[0]?.name],
-            //         tickvals: [gauge.value, thresholds[0]?.value],
-            //         ticklen: 5,
-            //       }
-            //     : {}),
-            // },
+            axis: {
+              ...(showThresholdLabels && thresholds && thresholds.length
+                ? {
+                    ticktext: [gauge.value, thresholds[0]?.name],
+                    tickvals: [gauge.value, thresholds[0]?.value],
+                    ticklen: 5,
+                  }
+                : {}),
+            },
 
             // custom gauge chart=========
 
-            // ...(thresholds &&
-            //   thresholds.length && {
-            //     steps : thresholds.map((threshold: ThresholdUnitType) => {
-            //       const value =Number(threshold.value)
-            //       return {
-            //         range: [0, value+ 0.25 ],
-            //         color: threshold.color || 'red',
-            //         name: threshold.name || '',
-            //         templateitemname: 'stepTwo-min',
-            //         visible: true
-            //       }
-            //     } )
-            //   }),
+            ...(showThresholdMarkers && thresholds &&
+              thresholds.length && {
+                steps : thresholds.map((threshold: ThresholdUnitType) => {
+                  const value =Number(threshold.value)
+                  return {
+                    range: [value, value+ 0.25 ],
+                    color: threshold.color || 'red',
+                    name: threshold.name || '',
+                    templateitemname: 'stepTwo-min',
+                    visible: true
+                  }
+                } )
+              }),
             // steps: [
             //   {
             //     range: [10, 10.5],

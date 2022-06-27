@@ -44,28 +44,28 @@ export const createGaugeTypeDefinition = (params: any = {}) => ({
         mapTo: 'dataConfig',
         editor: VizDataPanel,
         sections: [
-          // {
-          //   id: 'value_options',
-          //   name: 'Value options',
-          //   editor: ConfigGaugeValueOptions,
-          //   mapTo: 'valueOptions',
-          //   schemas: [
-          //     {
-          //       name: 'Series',
-          //       isSingleSelection: true,
-          //       onChangeHandler: 'setXaxisSelections',
-          //       component: null,
-          //       mapTo: 'series',
-          //     },
-          //     {
-          //       name: 'Value',
-          //       isSingleSelection: false,
-          //       onChangeHandler: 'setYaxisSelections',
-          //       component: null,
-          //       mapTo: 'value',
-          //     },
-          //   ],
-          // },
+          {
+            id: 'value_options',
+            name: 'Value options',
+            editor: ConfigGaugeValueOptions,
+            mapTo: 'valueOptions',
+            schemas: [
+              {
+                name: 'Series',
+                isSingleSelection: true,
+                onChangeHandler: 'setXaxisSelections',
+                component: null,
+                mapTo: 'series',
+              },
+              {
+                name: 'Value',
+                isSingleSelection: false,
+                onChangeHandler: 'setYaxisSelections',
+                component: null,
+                mapTo: 'value',
+              },
+            ],
+          },
           {
             id: 'chart-styles',
             name: 'Chart styles',
