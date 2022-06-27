@@ -13,8 +13,8 @@ import {
   ConfigThresholds,
   ConfigGaugeValueOptions,
   ConfigChartOptions,
-  ConfigInputField,
-  ButtonGroupItem,
+  InputFieldItem,
+  // ButtonGroupItem,
   SwitchButton
 } from '../../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls';
 import { DefaultGaugeChartSyles } from '../../../../../../common/constants/shared';
@@ -44,28 +44,28 @@ export const createGaugeTypeDefinition = (params: any = {}) => ({
         mapTo: 'dataConfig',
         editor: VizDataPanel,
         sections: [
-          {
-            id: 'value_options',
-            name: 'Value options',
-            editor: ConfigGaugeValueOptions,
-            mapTo: 'valueOptions',
-            schemas: [
-              {
-                name: 'Series',
-                isSingleSelection: true,
-                onChangeHandler: 'setXaxisSelections',
-                component: null,
-                mapTo: 'series',
-              },
-              {
-                name: 'Value',
-                isSingleSelection: false,
-                onChangeHandler: 'setYaxisSelections',
-                component: null,
-                mapTo: 'value',
-              },
-            ],
-          },
+          // {
+          //   id: 'value_options',
+          //   name: 'Value options',
+          //   editor: ConfigGaugeValueOptions,
+          //   mapTo: 'valueOptions',
+          //   schemas: [
+          //     {
+          //       name: 'Series',
+          //       isSingleSelection: true,
+          //       onChangeHandler: 'setXaxisSelections',
+          //       component: null,
+          //       mapTo: 'series',
+          //     },
+          //     {
+          //       name: 'Value',
+          //       isSingleSelection: false,
+          //       onChangeHandler: 'setYaxisSelections',
+          //       component: null,
+          //       mapTo: 'value',
+          //     },
+          //   ],
+          // },
           {
             id: 'chart-styles',
             name: 'Chart styles',
@@ -75,31 +75,31 @@ export const createGaugeTypeDefinition = (params: any = {}) => ({
               {
                 title: 'Title Size',
                 name: 'Title Size',
-                component: ConfigInputField,
+                component: InputFieldItem,
                 mapTo: 'titleSize',
                 eleType: 'input',
               },
               {
                 title: 'Value Size',
                 name: 'Value Size',
-                component: ConfigInputField,
+                component: InputFieldItem,
                 mapTo: 'valueSize',
                 eleType: 'input',
               },
-              {
-                title: 'Legend placement',
-                name: 'Legend placement',
-                component: ButtonGroupItem,
-                mapTo: 'legendPlacement',
-                eleType: 'filterButtons',
-                props: {
-                  groupOptions: [
-                    { label: 'Top', id: 'top' },
-                    { label: 'Bottom', id: 'bottom' },
-                  ],
-                  defaultSelections: [{ name: 'Left', id: "left" }],
-                }
-              },
+              // {
+              //   title: 'Legend placement',
+              //   name: 'Legend placement',
+              //   component: ButtonGroupItem,
+              //   mapTo: 'legendPlacement',
+              //   eleType: 'filterButtons',
+              //   props: {
+              //     groupOptions: [
+              //       { label: 'Top', id: 'top' },
+              //       { label: 'Bottom', id: 'bottom' },
+              //     ],
+              //     defaultSelections: [{ name: 'Left', id: "left" }],
+              //   }
+              // },
               {
                 title: 'Show threshold labels',
                 name: 'Show threshold labels',

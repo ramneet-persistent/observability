@@ -16,16 +16,21 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
   const {
     data,
     metadata: { fields },
+    dataConfig:  dataConfigTab
   } = visualizations.data.rawVizData;
-
+  console.log("visualizations ====", visualizations)
   const { dataConfig = {}, layoutConfig = {} } = visualizations.data.userConfigs;
 
-  const series =
-    dataConfig?.valueOptions && dataConfig?.valueOptions?.series
-      ? dataConfig.valueOptions.series
-      : [];
+  console.log("dataConfig ====", dataConfig)
+  console.log("dataConfigTab ===", dataConfigTab)
+  const series = dataConfigTab?.dimensions ? dataConfigTab?.dimensions : []
 
+  // const series =
+  //   dataConfig?.valueOptions && dataConfig?.valueOptions?.series
+  //     ? dataConfig.valueOptions.series
+  //     : [];
   console.log('series====', series);
+  // console.log("dimensions=====", dimensions)
 
   const value =
     dataConfig?.valueOptions && dataConfig?.valueOptions?.value
