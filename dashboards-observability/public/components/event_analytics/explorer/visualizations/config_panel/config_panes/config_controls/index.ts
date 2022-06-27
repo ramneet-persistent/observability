@@ -12,3 +12,5 @@ export { ConfigText } from './config_text';
 export { ConfigGaugeValueOptions } from './config_gauge_options';
 export { ColorPalettePicker } from './config_color_palette_picker';
 export { ConfigInputField } from './config_input_field';
+export { ButtonGroupItem } from './config_button_group';
+export { SwitchButton } from "./config_switch_button"

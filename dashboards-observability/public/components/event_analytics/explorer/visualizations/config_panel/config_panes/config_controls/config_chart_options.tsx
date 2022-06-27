@@ -17,10 +17,11 @@ export const ConfigChartOptions = ({
   const { data } = visualizations;
   const { data: vizData = {}, metadata: { fields = [] } = {} } = data?.rawVizData;
   const { dataConfig = {}, layoutConfig = {} } = visualizations?.data?.userConfigs;
-
+  console.log('vizState ===', vizState);
   const handleConfigurationChange = useCallback(
     (stateFiledName) => {
       return (changes) => {
+        console.log('changes ===', changes, 'stateFiledName', stateFiledName);
         handleConfigChange({
           ...vizState,
           [stateFiledName]: changes,
@@ -89,6 +90,14 @@ export const ConfigChartOptions = ({
             title: schema.name,
             currentValue: vizState[schema.mapTo] || '',
             handleInputChange: handleConfigurationChange(schema.mapTo),
+            vizState,
+            ...schema.props,
+          };
+        } else if (schema.eleType === 'switchButton') {
+          params = {
+            title: schema.name,
+            currentValue: vizState[schema.mapTo],
+            onToggle: handleConfigurationChange(schema.mapTo),
             vizState,
             ...schema.props,
           };

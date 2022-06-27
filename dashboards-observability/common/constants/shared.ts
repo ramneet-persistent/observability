@@ -170,3 +170,13 @@ export const DefaultChartStyles: DefaultChartStylesProps = {
 }
 
 export const FILLOPACITY_DIV_FACTOR = 200; 
+
+export interface DefaultGaugeChartSylesProps {
+  TitleSize: number;
+  ValueSize: number;
+}
+
+export const DefaultGaugeChartSyles: DefaultGaugeChartSylesProps = {
+  TitleSize: 14,
+  ValueSize: 28,
+};
