@@ -23,12 +23,12 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
 
   console.log("dataConfig ====", dataConfig)
   console.log("dataConfigTab ===", dataConfigTab)
-  const series = dataConfigTab?.dimensions ? dataConfigTab?.dimensions : []
+  // const series = dataConfigTab?.dimensions ? dataConfigTab?.dimensions : []
 
-  // const series =
-  //   dataConfig?.valueOptions && dataConfig?.valueOptions?.series
-  //     ? dataConfig.valueOptions.series
-  //     : [];
+  const series =
+    dataConfig?.valueOptions && dataConfig?.valueOptions?.series
+      ? dataConfig.valueOptions.series
+      : [];
   console.log('series====', series);
   // console.log("dimensions=====", dimensions)
 

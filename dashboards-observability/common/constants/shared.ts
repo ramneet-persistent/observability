@@ -178,5 +178,5 @@ export interface DefaultGaugeChartSylesProps {
 
 export const DefaultGaugeChartSyles: DefaultGaugeChartSylesProps = {
   TitleSize: 14,
-  ValueSize: 28,
+  ValueSize: 20,
 };
