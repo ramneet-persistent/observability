@@ -72,7 +72,7 @@ export const Line = ({ visualizations, layout, config }: any) => {
   }
 
   const isDimensionTimestamp = isEmpty(xaxis)
-    ? defaultAxes.xaxis.length && defaultAxes.xaxis[0].type === 'timestamp'
+    ? defaultAxes?.xaxis?.length && defaultAxes.xaxis[0].type === 'timestamp'
     : xaxis.length === 1 && xaxis[0].type === 'timestamp';
 
   let multiMetrics = {};
