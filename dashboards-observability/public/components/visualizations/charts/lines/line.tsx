@@ -18,6 +18,7 @@ import { EmptyPlaceholder } from '../../../event_analytics/explorer/visualizatio
 
 // <EmptyPlaceholder icon={visualizations?.vis?.iconType} />
 export const Line = ({ visualizations, layout, config }: any) => {
+  console.log('layout ====', layout);
   const {
     DefaultMode,
     Interpolation,
@@ -26,7 +27,7 @@ export const Line = ({ visualizations, layout, config }: any) => {
     MarkerSize,
     LegendPosition,
     ShowLegend,
-    LegendAngle
+    LegendAngle,
   } = DefaultChartStyles;
   const { vis } = visualizations;
   const {
@@ -68,9 +69,12 @@ export const Line = ({ visualizations, layout, config }: any) => {
   if (!isEmpty(xaxis) && !isEmpty(yaxis)) {
     valueSeries = [...yaxis];
   } else {
-    valueSeries = defaultAxes.yaxis || take(fields, lastIndex > 0 ? lastIndex : 1);
+    valueSeries = defaultAxes?.yaxis || take(fields, lastIndex > 0 ? lastIndex : 1);
+    // add side key for label position
+    valueSeries = valueSeries.map((i) => {
+      return { ...i, side: 'right' };
+    });
   }
-
   const isDimensionTimestamp = isEmpty(xaxis)
     ? defaultAxes?.xaxis?.length && defaultAxes.xaxis[0].type === 'timestamp'
     : xaxis.length === 1 && xaxis[0].type === 'timestamp';
@@ -80,7 +84,6 @@ export const Line = ({ visualizations, layout, config }: any) => {
     const isBarMode = mode === 'bar';
 
     let calculatedLineValues = valueSeries.map((field: any, index: number) => {
-      console.log("field ===", field)
       const fillColor = hexToRgb(PLOTLY_COLOR[index % PLOTLY_COLOR.length], fillOpacity);
       const barMarker = {
         color: fillColor,
@@ -99,9 +102,14 @@ export const Line = ({ visualizations, layout, config }: any) => {
         [`yaxis${index + 1}`]: {
           // title: `yaxis${index + 1} title`, TODO: need to add title
           titlefont: { color: PLOTLY_COLOR[index] },
-          tickfont: { color: PLOTLY_COLOR[index] },
+          tickfont: {
+            color: PLOTLY_COLOR[index],
+            ...(labelSize && {
+              size: labelSize,
+            }),
+          },
           overlaying: 'y',
-          side: index === 0 ? 'left' : field.side || 'right',
+          side: field.side,
         },
       };
 
@@ -156,6 +164,7 @@ export const Line = ({ visualizations, layout, config }: any) => {
             size: labelSize,
           }),
         },
+        side: valueSeries[0].side,
       },
       showlegend: showLegend,
       ...(isBarMode && layoutForBarMode),

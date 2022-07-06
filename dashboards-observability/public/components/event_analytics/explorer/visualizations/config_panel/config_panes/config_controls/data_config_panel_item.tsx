@@ -64,7 +64,11 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
         const timestampXaxisIndex = xaxis ? xaxis.findIndex((i) => i.type === 'timestamp') : -1;
         setConfigList({
           dimensions: [timestampXaxisIndex > -1 ? xaxis[timestampXaxisIndex] : initialConfigEntry],
-          metrics: [...(yaxis && yaxis)],
+          metrics: yaxis
+            ? yaxis.map((i: any) => {
+                return { ...i, side: 'right' };
+              })
+            : [],
         });
       } else {
         setConfigList({
