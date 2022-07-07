@@ -82,7 +82,8 @@ export enum visChartTypes {
   Text = 'text',
   Gauge = 'gauge',
   Histogram = 'histogram',
-  TreeMap = 'tree_map'
+  TreeMap = 'tree_map',
+  Stats = "stats"
 }
 
 export interface ValueOptionsAxes {
@@ -97,7 +98,7 @@ export interface ValueOptionsAxes {
 
 export const NUMERICAL_FIELDS = ['short', 'integer', 'long', 'float', 'double'];
 
-export const ENABLED_VIS_TYPES = [visChartTypes.Bar, visChartTypes.HorizontalBar, visChartTypes.Line, visChartTypes.Pie, visChartTypes.HeatMap, visChartTypes.Text, visChartTypes.TreeMap];
+export const ENABLED_VIS_TYPES = [visChartTypes.Bar, visChartTypes.HorizontalBar, visChartTypes.Line, visChartTypes.Pie, visChartTypes.HeatMap, visChartTypes.Text, visChartTypes.TreeMap, visChartTypes.Stats];
 
 //Live tail constants
 export const LIVE_OPTIONS = [
@@ -156,7 +157,8 @@ export interface DefaultChartStylesProps {
   FillOpacity: number,
   MarkerSize: number,
   ShowLegend: string,
-  LegendPosition: string
+  LegendPosition: string,
+  StatsMode: string
 };
 
 export const DefaultChartStyles: DefaultChartStylesProps = {
@@ -166,7 +168,8 @@ export const DefaultChartStyles: DefaultChartStylesProps = {
   FillOpacity: 40,
   MarkerSize: 5,
   ShowLegend: 'show',
-  LegendPosition: 'v'
+  LegendPosition: 'v',
+  StatsMode: 'auto'
 }
 
 export const FILLOPACITY_DIV_FACTOR = 200; 
