@@ -158,7 +158,8 @@ export interface DefaultChartStylesProps {
   MarkerSize: number,
   ShowLegend: string,
   LegendPosition: string,
-  StatsMode: string
+  StatsTextMode: string,
+  Orientation: string,
 };
 
 export const DefaultChartStyles: DefaultChartStylesProps = {
@@ -169,7 +170,8 @@ export const DefaultChartStyles: DefaultChartStylesProps = {
   MarkerSize: 5,
   ShowLegend: 'show',
   LegendPosition: 'v',
-  StatsMode: 'auto'
+  StatsTextMode: 'auto',
+  Orientation: 'auto'
 }
 
 export const FILLOPACITY_DIV_FACTOR = 200; 

@@ -20,12 +20,12 @@ import { DefaultChartStyles } from '../../../../../common/constants/shared';
 const sharedConfigs = getPlotlySharedConfigs();
 const VIS_CATEGORY = getPlotlyCategory();
 const {
-  StatsMode,
+  StatsTextMode,
   LegendPosition,
 } = DefaultChartStyles;
 
 export const createStatsTypeDefinition = (params: any = {}) => ({
-  name: 'stats',
+  name: 'Stats',
   type: 'stats',
   id: 'stats',
   label: 'Stats',
@@ -105,7 +105,7 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
                     { name: 'Names', id: 'names' },
                     { name: 'Values', id: 'values' },
                   ],
-                  defaultSelections: [{ name: 'Auto', id: StatsMode }],
+                  defaultSelections: [{ name: 'Auto', id: StatsTextMode }],
                 },
               },
             ],
