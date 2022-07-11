@@ -98,7 +98,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
           value: gauge.value || 0,
           title: {
             text: gauge.field_name,
-            // font: { size: titleSize },
+            font: { size: titleSize },
           },
           ...(valueSize && {
             number: {
