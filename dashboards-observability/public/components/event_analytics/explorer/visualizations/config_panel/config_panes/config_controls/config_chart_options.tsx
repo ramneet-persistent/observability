@@ -15,7 +15,7 @@ export const ConfigChartOptions = ({
   handleConfigChange,
 }: any) => {
   const { data } = visualizations;
-  const { data: vizData = {}, metadata: { fields = [] } = {} } = data?.rawVizData;
+  const { data: vizData = {}, metadata: { fields = [] } = {}, tree_map } = data?.rawVizData;
   const { dataConfig = {}, layoutConfig = {} } = visualizations?.data?.userConfigs;
 
   const handleConfigurationChange = useCallback(
@@ -44,53 +44,74 @@ export const ConfigChartOptions = ({
     return (
       currentSchemas &&
       currentSchemas.map((schema, index) => {
-        let params = {};
+        let params = {
+          title: schema.name,
+          vizState,
+          ...schema.props,
+        };
         const DimensionComponent = schema.component || PanelItem;
         if (schema.eleType === 'palettePicker') {
           params = {
-            title: schema.name,
+            ...params,
             colorPalettes: schema.options || [],
             selectedColor: vizState[schema.mapTo] || schema.defaultState,
             onSelectChange: handleConfigurationChange(schema.mapTo),
-            vizState,
-            ...schema.props,
           };
         } else if (schema.eleType === 'singleColorPicker') {
           params = {
-            title: schema.name,
+            ...params,
             selectedColor: vizState[schema.mapTo] || schema.defaultState,
             onSelectChange: handleConfigurationChange(schema.mapTo),
-            vizState,
-            ...schema.props,
           };
         } else if (schema.eleType === 'colorpicker') {
           params = {
-            title: schema.name,
+            ...params,
             selectedColor: vizState[schema.mapTo] || schema?.defaultState,
             colorPalettes: schema.options || [],
             onSelectChange: handleConfigurationChange(schema.mapTo),
-            vizState,
-            ...schema.props,
           };
         } else if (schema.eleType === 'treemapColorPicker') {
           params = {
-            title: schema.name,
+            ...params,
             selectedColor: vizState[schema.mapTo] || schema?.defaultState,
             colorPalettes: schema.options || [],
             numberOfParents:
-              (dataConfig?.valueOptions?.parentFields !== undefined &&
-                dataConfig?.valueOptions?.parentFields.length) | 0,
+              (tree_map?.dataConfig?.dimensions !== undefined &&
+                tree_map?.dataConfig.dimensions[0].parentFields.length) | 0,
             onSelectChange: handleConfigurationChange(schema.mapTo),
-            vizState,
-            ...schema.props,
           };
         } else if (schema.eleType === 'input') {
           params = {
-            title: schema.name,
+            ...params,
             currentValue: vizState[schema.mapTo] || '',
+            numValue: vizState[schema.mapTo] || '',
             handleInputChange: handleConfigurationChange(schema.mapTo),
-            vizState,
-            ...schema.props,
+          };
+        } else if (schema.eleType === 'slider') {
+          params = {
+            ...params,
+            maxRange: schema.props.max,
+            currentRange: vizState[schema.mapTo] || schema?.defaultState,
+            handleSliderChange: handleConfigurationChange(schema.mapTo),
+          };
+        } else if (schema.eleType === 'switchButton') {
+          params = {
+            ...params,
+            title: schema.name,
+            currentValue: vizState[schema.mapTo],
+            onToggle: handleConfigurationChange(schema.mapTo),
+          };
+        } else if (schema.eleType === 'buttons') {
+          params = {
+            ...params,
+            title: schema.name,
+            legend: schema.name,
+            groupOptions: schema?.props?.options.map((btn: { name: string }) => ({
+              ...btn,
+              label: btn.name,
+            })),
+            idSelected: vizState[schema.mapTo] || schema?.props?.defaultSelections[0]?.id,
+            handleButtonChange: handleConfigurationChange(schema.mapTo),
           };
         } else if (schema.eleType === 'buttons') {
           params = {
@@ -107,6 +128,7 @@ export const ConfigChartOptions = ({
           };
         } else {
           params = {
+            ...params,
             paddingTitle: schema.name,
             advancedTitle: 'advancedTitle',
             dropdownList:
@@ -115,8 +137,6 @@ export const ConfigChartOptions = ({
             onSelectChange: handleConfigurationChange(schema.mapTo),
             isSingleSelection: schema.isSingleSelection,
             selectedAxis: vizState[schema.mapTo] || schema.defaultState,
-            vizState,
-            ...schema.props,
           };
         }
         return (

@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Treemap component Renders treemap component 1`] = `
-<TreeMap
-  config={Object {}}
+exports[`Histogram component Renders histogram component 1`] = `
+<Histogram
+  config={true}
   layout={
     Object {
       "colorway": Array [
@@ -494,30 +494,16 @@ exports[`Treemap component Renders treemap component 1`] = `
     data={
       Array [
         Object {
-          "labels": Array [
-            "error",
-            "info",
-            "login",
-            "security",
-            "success",
-            "warning",
-          ],
-          "marker": Object {},
-          "parents": Array [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-          ],
-          "sort": true,
-          "textinfo": "label+value+percent parent+percent entry",
-          "tiling": Object {
-            "packing": undefined,
+          "marker": Object {
+            "color": "rgba(60,161,199,0.2)",
+            "line": Object {
+              "color": "rgba(60,161,199,1)",
+              "width": 2,
+            },
           },
-          "type": "treemap",
-          "values": Array [
+          "name": "count()",
+          "type": "histogram",
+          "x": Array [
             154,
             1753,
             116,
@@ -525,15 +511,20 @@ exports[`Treemap component Renders treemap component 1`] = `
             1964,
             219,
           ],
+          "xbins": undefined,
         },
       ]
     }
     layout={
       Object {
+        "barmode": "group",
         "colorway": Array [
           "#8C55A3",
         ],
         "height": 220,
+        "legend": Object {
+          "orientation": "v",
+        },
         "margin": Object {
           "b": 15,
           "l": 60,
@@ -543,7 +534,6 @@ exports[`Treemap component Renders treemap component 1`] = `
         },
         "showlegend": true,
         "title": "",
-        "treemapcolorway": Object {},
       }
     }
   >
@@ -556,30 +546,16 @@ exports[`Treemap component Renders treemap component 1`] = `
       data={
         Array [
           Object {
-            "labels": Array [
-              "error",
-              "info",
-              "login",
-              "security",
-              "success",
-              "warning",
-            ],
-            "marker": Object {},
-            "parents": Array [
-              "",
-              "",
-              "",
-              "",
-              "",
-              "",
-            ],
-            "sort": true,
-            "textinfo": "label+value+percent parent+percent entry",
-            "tiling": Object {
-              "packing": undefined,
+            "marker": Object {
+              "color": "rgba(60,161,199,0.2)",
+              "line": Object {
+                "color": "rgba(60,161,199,1)",
+                "width": 2,
+              },
             },
-            "type": "treemap",
-            "values": Array [
+            "name": "count()",
+            "type": "histogram",
+            "x": Array [
               154,
               1753,
               116,
@@ -587,6 +563,7 @@ exports[`Treemap component Renders treemap component 1`] = `
               1964,
               219,
             ],
+            "xbins": undefined,
           },
         ]
       }
@@ -595,15 +572,14 @@ exports[`Treemap component Renders treemap component 1`] = `
       layout={
         Object {
           "autosize": true,
-          "barmode": "stack",
+          "barmode": "group",
           "colorway": Array [
             "#8C55A3",
           ],
           "height": 220,
           "hovermode": "closest",
           "legend": Object {
-            "orientation": "h",
-            "traceorder": "normal",
+            "orientation": "v",
           },
           "margin": Object {
             "b": 15,
@@ -614,7 +590,6 @@ exports[`Treemap component Renders treemap component 1`] = `
           },
           "showlegend": true,
           "title": "",
-          "treemapcolorway": Object {},
           "xaxis": Object {
             "automargin": true,
             "rangemode": "normal",
@@ -647,5 +622,5 @@ exports[`Treemap component Renders treemap component 1`] = `
       />
     </PlotlyComponent>
   </Plt>
-</TreeMap>
+</Histogram>
 `;
