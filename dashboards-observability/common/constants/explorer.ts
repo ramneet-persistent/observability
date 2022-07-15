@@ -136,9 +136,11 @@ export const HEADER_HEIGHT = 35;
 export interface DefaultStatsParametersProps {
   StatsTextMode: string,
   Orientation: string,
+  DataSlice: number
 };
 
 export const DefaultStatsParameters: DefaultStatsParametersProps = {
   StatsTextMode: 'auto',
   Orientation: 'auto',
+  DataSlice: -1
 }
