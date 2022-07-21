@@ -35,11 +35,12 @@ export const Stats = ({ visualizations, layout, config }: any) => {
   const thresholds = dataConfig?.thresholds || [];
   const titleSize = dataConfig?.chartStyles?.titleSize;
   const valueSize = dataConfig?.chartStyles?.valueSize;
-  const selectedOrientation = dataConfig?.chartStyles?.orientation || Orientation
+  const selectedOrientation = dataConfig?.chartStyles?.orientation || Orientation;
   let orientation = selectedOrientation === 'auto' || selectedOrientation === 'v' ? 'auto' : 'h';
-  const textMode = dataConfig?.chartStyles?.textMode || StatsTextMode;
+  const selectedTextMode = dataConfig?.chartStyles?.textMode || StatsTextMode;
+  const textMode =
+    selectedTextMode === 'auto' || selectedTextMode === 'values+names' ? 'auto' : selectedTextMode;
   const chartType = dataConfig?.chartStyles?.chartType || StatsTextMode;
-  const legendPosition = dataConfig?.legend?.position || LegendPosition;
   const dataSlice = chartType === 'auto' ? [DataSlice] : [0, 2];
   if (chartType === 'horizontal') {
     orientation = 'v';
@@ -156,7 +157,6 @@ export const Stats = ({ visualizations, layout, config }: any) => {
           {
             type: 'indicator',
             mode: 'number',
-            // visible: 'legendonly',
             ...(textMode === 'auto'
               ? {
                   title: {
@@ -209,25 +209,6 @@ export const Stats = ({ visualizations, layout, config }: any) => {
               yaxis: `y${index + 1}`,
             }),
           });
-        }
-
-        if(chartType === 'horizontal'){
-          shapes.push({
-            type: 'rect',
-            xref: `x${index > 0 ? index + 1 : ''}`,
-            yref: `y${index > 0 ? index + 1 : ''}`,
-            x0: 0,
-            y0: index,
-            // x1: 0.5,
-            // y1: 0.5,
-            xsizemode: 'scaled',
-            // line: {
-            //   color: 'rgb(50, 171, 96)',
-            //   width: 3
-            // },
-            fillcolor: PLOTLY_COLOR[index],
-            "layer": "below",
-          })
         }
 
         return prev.concat(trace);
@@ -284,8 +265,6 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       title: dataConfig?.panelOptions?.title || layoutConfig.layout?.title || '',
       showlegend: false,
       ...(chartType === 'auto' && { ...lineLayout }),
-      // ...lineLayout,
-      paper_bgcolor: "red",
       margin: {
         l: 0,
         r: 0,
@@ -294,7 +273,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       },
       ...(chartType === 'horizontal'
         ? {
-            shapes : shapes
+            shapes: shapes,
           }
         : {}),
     };

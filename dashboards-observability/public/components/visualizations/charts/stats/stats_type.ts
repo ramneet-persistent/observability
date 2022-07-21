@@ -52,33 +52,6 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
             mapTo: 'chartStyles',
             schemas: [
               {
-                name: 'Orientation',
-                component: ButtonGroupItem,
-                mapTo: 'orientation',
-                eleType: 'buttons',
-                props: {
-                  options: [
-                    { name: 'Auto', id: 'auto' },
-                    { name: 'Horizontal', id: 'h' },
-                    { name: 'Vertical', id: 'v' },
-                  ],
-                  defaultSelections: [{ name: 'Auto', id: 'auto' }],
-                },
-              },
-              {
-                name: 'Legend Placement',
-                mapTo: 'legendPlacement',
-                component: ButtonGroupItem,
-                eleType: 'buttons',
-                props: {
-                  options: [
-                    { name: 'Right', id: 'v' },
-                    { name: 'Bottom', id: 'h' },
-                  ],
-                  defaultSelections: [{ name: 'Right', id: LegendPosition }],
-                },
-              },
-              {
                 name: 'Chart type',
                 mapTo: 'chartType',
                 component: ButtonGroupItem,
@@ -88,6 +61,20 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
                     { name: 'Auto', id: 'auto' },
                     { name: 'Horizontal', id: 'horizontal' },
                     { name: 'Text mode', id: 'text' },
+                  ],
+                  defaultSelections: [{ name: 'Auto', id: 'auto' }],
+                },
+              },
+              {
+                name: 'Orientation',
+                component: ButtonGroupItem,
+                mapTo: 'orientation',
+                eleType: 'buttons',
+                props: {
+                  options: [
+                    { name: 'Auto', id: 'auto' },
+                    { name: 'Horizontal', id: 'h' },
+                    { name: 'Vertical', id: 'v' },
                   ],
                   defaultSelections: [{ name: 'Auto', id: 'auto' }],
                 },
@@ -113,7 +100,8 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
                 eleType: 'buttons',
                 props: {
                   options: [
-                    { name: 'Values + Names', id: 'auto' },
+                    { name: 'Auto', id: 'auto' },
+                    { name: 'Values + Names', id: 'values+names' },
                     { name: 'Names', id: 'names' },
                     { name: 'Values', id: 'values' },
                   ],
