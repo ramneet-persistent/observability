@@ -17,12 +17,11 @@ import {
 } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls';
 import { ConfigAvailability } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_availability';
 import { DefaultChartStyles } from '../../../../../common/constants/shared';
+import { DefaultStatsParameters } from '../../../../../common/constants/explorer';
 const sharedConfigs = getPlotlySharedConfigs();
 const VIS_CATEGORY = getPlotlyCategory();
-const {
-  StatsTextMode,
-  LegendPosition,
-} = DefaultChartStyles;
+const { LegendPosition } = DefaultChartStyles;
+const { StatsTextMode } = DefaultStatsParameters;
 
 export const createStatsTypeDefinition = (params: any = {}) => ({
   name: 'Stats',
@@ -42,7 +41,7 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
     panelTabs: [
       {
         id: 'data-panel',
-        name: 'Data',
+        name: 'Style',
         mapTo: 'dataConfig',
         editor: VizDataPanel,
         sections: [
@@ -60,8 +59,8 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
                 props: {
                   options: [
                     { name: 'Auto', id: 'auto' },
-                    { name: 'Vertical', id: 'v' },
                     { name: 'Horizontal', id: 'h' },
+                    { name: 'Vertical', id: 'v' },
                   ],
                   defaultSelections: [{ name: 'Auto', id: 'auto' }],
                 },
@@ -70,13 +69,27 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
                 name: 'Legend Placement',
                 mapTo: 'legendPlacement',
                 component: ButtonGroupItem,
-								eleType: 'buttons',
+                eleType: 'buttons',
                 props: {
                   options: [
                     { name: 'Right', id: 'v' },
                     { name: 'Bottom', id: 'h' },
                   ],
                   defaultSelections: [{ name: 'Right', id: LegendPosition }],
+                },
+              },
+              {
+                name: 'Chart type',
+                mapTo: 'chartType',
+                component: ButtonGroupItem,
+                eleType: 'buttons',
+                props: {
+                  options: [
+                    { name: 'Auto', id: 'auto' },
+                    { name: 'Horizontal', id: 'horizontal' },
+                    { name: 'Text mode', id: 'text' },
+                  ],
+                  defaultSelections: [{ name: 'Auto', id: 'auto' }],
                 },
               },
               {
@@ -100,12 +113,11 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
                 eleType: 'buttons',
                 props: {
                   options: [
-                    { name: 'Auto', id: 'auto' },
-                    { name: 'Values + Names', id: 'values+names' },
+                    { name: 'Values + Names', id: 'auto' },
                     { name: 'Names', id: 'names' },
                     { name: 'Values', id: 'values' },
                   ],
-                  defaultSelections: [{ name: 'Auto', id: StatsTextMode }],
+                  defaultSelections: [{ name: 'Values + Names', id: StatsTextMode }],
                 },
               },
             ],

@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 import Plotly from 'plotly.js-dist';
 import { Plt } from '../../plotly/plot';
 import { DefaultStatsParameters } from '../../../../../common/constants/explorer';
-import { DefaultChartStyles } from '../../../../../common/constants/shared';
+import { DefaultChartStyles, PLOTLY_COLOR } from '../../../../../common/constants/shared';
 import { ThresholdUnitType } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_thresholds';
 
 const { LegendPosition } = DefaultChartStyles;
@@ -35,17 +35,45 @@ export const Stats = ({ visualizations, layout, config }: any) => {
   const thresholds = dataConfig?.thresholds || [];
   const titleSize = dataConfig?.chartStyles?.titleSize;
   const valueSize = dataConfig?.chartStyles?.valueSize;
-  const orientation = dataConfig?.chartStyles?.orientation || Orientation;
+  const selectedOrientation = dataConfig?.chartStyles?.orientation || Orientation
+  let orientation = selectedOrientation === 'auto' || selectedOrientation === 'v' ? 'auto' : 'h';
   const textMode = dataConfig?.chartStyles?.textMode || StatsTextMode;
+  const chartType = dataConfig?.chartStyles?.chartType || StatsTextMode;
   const legendPosition = dataConfig?.legend?.position || LegendPosition;
-
+  const dataSlice = chartType === 'auto' ? [DataSlice] : [0, 2];
+  if (chartType === 'horizontal') {
+    orientation = 'v';
+  }
+  console.log('chartType===', chartType);
   console.log('textMode====', textMode);
+  console.log('orientation==', orientation);
+
   let lineLayout = {
+    xaxis: {
+      visible: false,
+      showgrid: false,
+      anchor: 'y1',
+      margin: {
+        l: 0,
+        r: 0,
+        b: 0,
+        t: 0,
+      },
+    },
     yaxis: {
       visible: false,
       showgrid: false,
+      anchor: 'x1',
+      margin: {
+        l: 0,
+        r: 0,
+        b: 0,
+        t: 0,
+      },
     },
   };
+
+  let shapes: any = [];
 
   const statsData: Plotly.Data[] = useMemo(() => {
     let calculatedStatsData: Plotly.Data[] = [];
@@ -62,8 +90,9 @@ export const Stats = ({ visualizations, layout, config }: any) => {
 
       // case 3: multiple dimensions and multiple metrics
       if (dimensionsLength && metricsLength) {
+        console.log('data =====', data);
         const selectedDimensionsData = [
-          ...dimensions.map((dimension: any) => data[dimension.name].slice(DataSlice)),
+          ...dimensions.map((dimension: any) => data[dimension.name].slice(...dataSlice)),
         ].reduce(function (prev, cur) {
           return prev.map(function (i, j) {
             return `${i},<br>${cur[j]}`;
@@ -75,7 +104,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
         ];
 
         const selectedMetricsData = [
-          ...metrics.map((metric: any) => data[metric.name].slice(DataSlice)),
+          ...metrics.map((metric: any) => data[metric.name].slice(...dataSlice)),
         ];
 
         selectedMetricsData.map((metricSlice: any, metricSliceIndex) => {
@@ -83,6 +112,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
             ...calculatedStatsData,
             ...metricSlice.map((metricSliceData: any, metricSliceDataIndex: number) => {
               return {
+                dimension_name: selectedDimensionsData[metricSliceDataIndex],
                 time_series_metric: data[metrics[metricSliceIndex].name],
                 time_series_dimension: selectedDimensionsDataNoSlice[metricSliceDataIndex],
                 field_name: `${selectedDimensionsData[metricSliceDataIndex]},<br>${metrics[metricSliceIndex].name}`,
@@ -92,26 +122,59 @@ export const Stats = ({ visualizations, layout, config }: any) => {
           ];
         });
       }
-
+      console.log('calculatedStatsData ---indicator', calculatedStatsData);
       return calculatedStatsData.reduce((prev, curr, index) => {
         console.log('prevvvv', prev, 'currr', curr, 'index===', index);
+
         lineLayout = {
           ...lineLayout,
-          [`yaxis${index > 0 ? index + 1 : ``}`]: {
+          [`yaxis${index > 0 ? index + 1 : ''}`]: {
             visible: false,
             showgrid: false,
+            anchor: `x${index > 0 ? index + 1 : ''}`,
+            margin: {
+              l: 0,
+              r: 0,
+              b: 0,
+              t: 0,
+            },
+          },
+          [`xaxis${index > 0 ? index + 1 : ''}`]: {
+            visible: false,
+            showgrid: false,
+            anchor: `y${index > 0 ? index + 1 : ''}`,
+            margin: {
+              l: 0,
+              r: 0,
+              b: 0,
+              t: 0,
+            },
           },
         };
-        return prev.concat([
+
+        const trace = [
           {
             type: 'indicator',
             mode: 'number',
-            value: curr.value || 0,
-            title: {
-              text: curr.field_name,
-              font: { size: titleSize },
-              // align: legendPlacement,
-            },
+            // visible: 'legendonly',
+            ...(textMode === 'auto'
+              ? {
+                  title: {
+                    text: curr.field_name,
+                    font: { size: titleSize },
+                  },
+                  value: curr.value || 0,
+                }
+              : textMode === 'names'
+              ? {
+                  title: {
+                    text: curr.field_name,
+                    font: { size: titleSize },
+                  },
+                }
+              : {
+                  value: curr.value || 0,
+                }),
             ...(valueSize && {
               number: {
                 font: {
@@ -121,32 +184,98 @@ export const Stats = ({ visualizations, layout, config }: any) => {
               },
             }),
             domain: {
-              row: 0,
-              column: index,
+              ...(chartType === 'auto'
+                ? orientation === 'auto'
+                  ? { row: 0, column: index }
+                  : { row: index, column: 0 }
+                : chartType === 'horizontal'
+                ? orientation === 'auto'
+                  ? { row: index, column: 0 }
+                  : { row: 0, column: index }
+                : {}),
             },
           },
-          {
+        ];
+        if (chartType === 'auto') {
+          trace.push({
             fill: 'tozeroy',
             mode: 'line',
             x: curr.time_series_dimension,
             y: curr.time_series_metric,
             type: 'scatter',
+            name: curr.dimension_name,
             ...(index > 0 && {
               xaxis: `x${index + 1}`,
               yaxis: `y${index + 1}`,
             }),
-          },
-        ]);
+          });
+        }
+
+        if(chartType === 'horizontal'){
+          shapes.push({
+            type: 'rect',
+            xref: `x${index > 0 ? index + 1 : ''}`,
+            yref: `y${index > 0 ? index + 1 : ''}`,
+            x0: 0,
+            y0: index,
+            // x1: 0.5,
+            // y1: 0.5,
+            xsizemode: 'scaled',
+            // line: {
+            //   color: 'rgb(50, 171, 96)',
+            //   width: 3
+            // },
+            fillcolor: PLOTLY_COLOR[index],
+            "layer": "below",
+          })
+        }
+
+        return prev.concat(trace);
       }, []);
     }
     return calculatedStatsData;
-  }, [dimensions, metrics, data, fields, thresholds, orientation, titleSize, valueSize]);
+  }, [
+    dimensions,
+    metrics,
+    data,
+    fields,
+    thresholds,
+    orientation,
+    titleSize,
+    valueSize,
+    textMode,
+    chartType,
+  ]);
 
   const mergedLayout = useMemo(() => {
     return {
       grid: {
-        rows: 1,
-        columns: metricsLength,
+        ...(chartType === 'auto'
+          ? orientation === 'auto'
+            ? {
+                rows: 1,
+                columns: metricsLength,
+                xgap: 0,
+              }
+            : {
+                rows: metricsLength,
+                columns: 1,
+                ygap: 0,
+              }
+          : chartType === 'horizontal'
+          ? orientation === 'auto'
+            ? {
+                rows: 1,
+                columns: metricsLength,
+                xgap: 0,
+              }
+            : {
+                rows: metricsLength,
+                columns: 1,
+                ygap: 0,
+              }
+          : {}),
+
         pattern: 'independent',
         roworder: 'bottom to top',
       },
@@ -154,11 +283,20 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       ...(layoutConfig.layout && layoutConfig.layout),
       title: dataConfig?.panelOptions?.title || layoutConfig.layout?.title || '',
       showlegend: false,
-      xaxis: {
-        visible: false,
-        showgrid: false,
+      ...(chartType === 'auto' && { ...lineLayout }),
+      // ...lineLayout,
+      paper_bgcolor: "red",
+      margin: {
+        l: 0,
+        r: 0,
+        b: 0,
+        t: 0,
       },
-      ...lineLayout,
+      ...(chartType === 'horizontal'
+        ? {
+            shapes : shapes
+          }
+        : {}),
     };
   }, [
     data,
@@ -167,6 +305,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
     layoutConfig.layout,
     dataConfig?.panelOptions?.title,
     orientation,
+    chartType,
   ]);
 
   const mergedConfigs = {
@@ -175,5 +314,6 @@ export const Stats = ({ visualizations, layout, config }: any) => {
   };
 
   console.log('statsData====', statsData);
+  console.log('mergedLayout ===', mergedLayout);
   return <Plt data={statsData} layout={mergedLayout} config={mergedConfigs} />;
 };
