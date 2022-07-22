@@ -41,10 +41,11 @@ export const Stats = ({ visualizations, layout, config }: any) => {
   const textMode =
     selectedTextMode === 'auto' || selectedTextMode === 'values+names' ? 'auto' : selectedTextMode;
   const chartType = dataConfig?.chartStyles?.chartType || StatsTextMode;
-  const dataSlice = chartType === 'auto' ? [DataSlice] : [0, 2];
-  if (chartType === 'horizontal') {
-    orientation = 'v';
-  }
+  // const dataSlice = chartType === 'auto' ? [DataSlice] : [0, 1];
+  const dataSlice = chartType === 'auto' ? [DataSlice] : [DataSlice];
+  // if (chartType === 'horizontal') {
+  //   orientation = 'v';
+  // }
   console.log('chartType===', chartType);
   console.log('textMode====', textMode);
   console.log('orientation==', orientation);
@@ -126,7 +127,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       console.log('calculatedStatsData ---indicator', calculatedStatsData);
       return calculatedStatsData.reduce((prev, curr, index) => {
         console.log('prevvvv', prev, 'currr', curr, 'index===', index);
-
+        // if (chartType === 'auto') {
         lineLayout = {
           ...lineLayout,
           [`yaxis${index > 0 ? index + 1 : ''}`]: {
@@ -152,6 +153,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
             },
           },
         };
+        // }
 
         const trace = [
           {
@@ -161,7 +163,10 @@ export const Stats = ({ visualizations, layout, config }: any) => {
               ? {
                   title: {
                     text: curr.field_name,
-                    font: { size: titleSize },
+                    font: {
+                      size: titleSize,
+                      color: '#fff',
+                    },
                   },
                   value: curr.value || 0,
                 }
@@ -169,20 +174,29 @@ export const Stats = ({ visualizations, layout, config }: any) => {
               ? {
                   title: {
                     text: curr.field_name,
-                    font: { size: titleSize },
+                    font: { size: titleSize, color: '#fff' },
                   },
                 }
               : {
                   value: curr.value || 0,
                 }),
-            ...(valueSize && {
-              number: {
-                font: {
-                  size: valueSize,
-                },
-                valueformat: 'f',
-              },
-            }),
+            ...(valueSize
+              ? {
+                  number: {
+                    font: {
+                      size: valueSize,
+                      color: '#fff',
+                    },
+                  },
+                }
+              : {
+                  number: {
+                    font: {
+                      color: '#fff',
+                    },
+                  },
+                }),
+
             domain: {
               ...(chartType === 'auto'
                 ? orientation === 'auto'
@@ -190,8 +204,8 @@ export const Stats = ({ visualizations, layout, config }: any) => {
                   : { row: index, column: 0 }
                 : chartType === 'horizontal'
                 ? orientation === 'auto'
-                  ? { row: index, column: 0 }
-                  : { row: 0, column: index }
+                  ? { row: 0, column: index }
+                  : { row: index, column: 0 }
                 : {}),
             },
           },
@@ -208,6 +222,24 @@ export const Stats = ({ visualizations, layout, config }: any) => {
               xaxis: `x${index + 1}`,
               yaxis: `y${index + 1}`,
             }),
+          });
+        }
+        if (chartType === 'horizontal') {
+          shapes.push({
+            type: 'rect',
+            xref: `x${index > 0 ? index + 1 : ''}`,
+            yref: `y${index > 0 ? index + 1 : ''}`,
+            x0: 0,
+            y0: index,
+            // x1: 0.5,
+            // y1: 0.5,
+            xsizemode: 'scaled',
+            line: {
+              color: PLOTLY_COLOR[index % PLOTLY_COLOR.length],
+              width: 3,
+            },
+            fillcolor: PLOTLY_COLOR[index % PLOTLY_COLOR.length],
+            layer: 'below',
           });
         }
 
@@ -228,6 +260,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
     chartType,
   ]);
 
+  console.log('shapes====', shapes);
   const mergedLayout = useMemo(() => {
     return {
       grid: {
@@ -265,6 +298,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       title: dataConfig?.panelOptions?.title || layoutConfig.layout?.title || '',
       showlegend: false,
       ...(chartType === 'auto' && { ...lineLayout }),
+      ...lineLayout,
       margin: {
         l: 0,
         r: 0,
@@ -273,7 +307,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       },
       ...(chartType === 'horizontal'
         ? {
-            shapes: shapes,
+            shapes,
           }
         : {}),
     };
