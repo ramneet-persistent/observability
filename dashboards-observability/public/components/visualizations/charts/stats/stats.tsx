@@ -19,6 +19,8 @@ export const Stats = ({ visualizations, layout, config }: any) => {
     metadata: { fields },
   } = visualizations.data.rawVizData;
 
+  console.log('fields', fields);
+
   // data config parametrs
   const { dataConfig = {}, layoutConfig = {} } = visualizations.data.userConfigs;
   const dataConfigTab = visualizations?.data?.rawVizData?.Stats?.dataConfig;
@@ -52,8 +54,8 @@ export const Stats = ({ visualizations, layout, config }: any) => {
 
   let lineLayout = {
     xaxis: {
-      visible: false,
-      showgrid: false,
+      visible: true,
+      showgrid: true,
       anchor: 'y1',
       margin: {
         l: 0,
@@ -63,8 +65,8 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       },
     },
     yaxis: {
-      visible: false,
-      showgrid: false,
+      visible: true,
+      showgrid: true,
       anchor: 'x1',
       margin: {
         l: 0,
@@ -76,6 +78,18 @@ export const Stats = ({ visualizations, layout, config }: any) => {
   };
 
   let shapes: any = [];
+  let annotations: any = [];
+  let horizontalChartTrace: any = {
+    x: [],
+    y: [],
+    mode: 'text',
+    text: [],
+    type: 'scattergl',
+    textfont: {
+      size: 20,
+      color: 'red',
+    },
+  };
 
   const statsData: Plotly.Data[] = useMemo(() => {
     let calculatedStatsData: Plotly.Data[] = [];
@@ -118,133 +132,208 @@ export const Stats = ({ visualizations, layout, config }: any) => {
                 time_series_metric: data[metrics[metricSliceIndex].name],
                 time_series_dimension: selectedDimensionsDataNoSlice[metricSliceDataIndex],
                 field_name: `${selectedDimensionsData[metricSliceDataIndex]},<br>${metrics[metricSliceIndex].name}`,
+                field_name_no_br: `${selectedDimensionsData[metricSliceDataIndex]},${metrics[metricSliceIndex].name}`,
                 value: metricSliceData,
               };
             }),
           ];
         });
       }
+
       console.log('calculatedStatsData ---indicator', calculatedStatsData);
-      return calculatedStatsData.reduce((prev, curr, index) => {
-        console.log('prevvvv', prev, 'currr', curr, 'index===', index);
-        // if (chartType === 'auto') {
-        lineLayout = {
-          ...lineLayout,
-          [`yaxis${index > 0 ? index + 1 : ''}`]: {
-            visible: false,
-            showgrid: false,
-            anchor: `x${index > 0 ? index + 1 : ''}`,
-            margin: {
-              l: 0,
-              r: 0,
-              b: 0,
-              t: 0,
+      if (chartType === 'auto') {
+        return calculatedStatsData.reduce((prev, curr, index) => {
+          console.log('prevvvv', prev, 'currr', curr, 'index===', index);
+          lineLayout = {
+            ...lineLayout,
+            [`yaxis${index > 0 ? index + 1 : ''}`]: {
+              visible: true,
+              showgrid: true,
+              anchor: `x${index > 0 ? index + 1 : ''}`,
+              margin: {
+                l: 0,
+                r: 0,
+                b: 0,
+                t: 0,
+              },
             },
-          },
-          [`xaxis${index > 0 ? index + 1 : ''}`]: {
-            visible: false,
-            showgrid: false,
-            anchor: `y${index > 0 ? index + 1 : ''}`,
-            margin: {
-              l: 0,
-              r: 0,
-              b: 0,
-              t: 0,
+            [`xaxis${index > 0 ? index + 1 : ''}`]: {
+              visible: true,
+              showgrid: true,
+              anchor: `y${index > 0 ? index + 1 : ''}`,
+              margin: {
+                l: 0,
+                r: 0,
+                b: 0,
+                t: 0,
+              },
             },
-          },
-        };
-        // }
+          };
 
-        const trace = [
-          {
-            type: 'indicator',
-            mode: 'number',
-            ...(textMode === 'auto'
-              ? {
-                  title: {
-                    text: curr.field_name,
-                    font: {
-                      size: titleSize,
-                      color: '#fff',
+          const trace: any =
+            chartType === 'auto'
+              ? [
+                  {
+                    type: 'indicator',
+                    mode: 'number',
+                    ...(textMode === 'auto'
+                      ? {
+                          title: {
+                            text: curr.field_name,
+                            font: {
+                              size: titleSize,
+                              color: '#fff',
+                            },
+                          },
+                          value: curr.value || 0,
+                        }
+                      : textMode === 'names'
+                      ? {
+                          title: {
+                            text: curr.field_name,
+                            font: { size: titleSize, color: '#fff' },
+                          },
+                        }
+                      : {
+                          value: curr.value || 0,
+                        }),
+                    ...(valueSize
+                      ? {
+                          number: {
+                            font: {
+                              size: valueSize,
+                              color: '#fff',
+                            },
+                          },
+                        }
+                      : {
+                          number: {
+                            font: {
+                              color: '#fff',
+                            },
+                          },
+                        }),
+
+                    domain: {
+                      ...(chartType === 'auto'
+                        ? orientation === 'auto'
+                          ? { row: 0, column: index }
+                          : { row: index, column: 0 }
+                        : chartType === 'horizontal'
+                        ? orientation === 'auto'
+                          ? { row: 0, column: index }
+                          : { row: index, column: 0 }
+                        : {}),
                     },
                   },
-                  value: curr.value || 0,
-                }
-              : textMode === 'names'
-              ? {
-                  title: {
-                    text: curr.field_name,
-                    font: { size: titleSize, color: '#fff' },
-                  },
-                }
-              : {
-                  value: curr.value || 0,
-                }),
-            ...(valueSize
-              ? {
-                  number: {
-                    font: {
-                      size: valueSize,
-                      color: '#fff',
+                ]
+              : [
+                  {
+                    x: [0.5],
+                    y: [index],
+                    mode: 'text',
+                    text: 'HELLO',
+                    type: 'scattergl',
+                    textfont: {
+                      size: 20,
+                      color: 'red',
                     },
                   },
-                }
-              : {
-                  number: {
-                    font: {
-                      color: '#fff',
-                    },
-                  },
-                }),
+                ];
 
-            domain: {
-              ...(chartType === 'auto'
-                ? orientation === 'auto'
-                  ? { row: 0, column: index }
-                  : { row: index, column: 0 }
-                : chartType === 'horizontal'
-                ? orientation === 'auto'
-                  ? { row: 0, column: index }
-                  : { row: index, column: 0 }
-                : {}),
-            },
-          },
-        ];
-        if (chartType === 'auto') {
-          trace.push({
-            fill: 'tozeroy',
-            mode: 'line',
-            x: curr.time_series_dimension,
-            y: curr.time_series_metric,
-            type: 'scatter',
-            name: curr.dimension_name,
-            ...(index > 0 && {
-              xaxis: `x${index + 1}`,
-              yaxis: `y${index + 1}`,
-            }),
-          });
-        }
-        if (chartType === 'horizontal') {
-          shapes.push({
-            type: 'rect',
-            xref: `x${index > 0 ? index + 1 : ''}`,
-            yref: `y${index > 0 ? index + 1 : ''}`,
-            x0: 0,
-            y0: index,
-            // x1: 0.5,
-            // y1: 0.5,
-            xsizemode: 'scaled',
-            line: {
-              color: PLOTLY_COLOR[index % PLOTLY_COLOR.length],
-              width: 3,
-            },
-            fillcolor: PLOTLY_COLOR[index % PLOTLY_COLOR.length],
-            layer: 'below',
-          });
-        }
+          if (chartType === 'auto') {
+            trace.push({
+              fill: 'tozeroy',
+              mode: 'line',
+              x: curr.time_series_dimension,
+              y: curr.time_series_metric,
+              type: 'scatter',
+              name: curr.dimension_name,
+              ...(index > 0 && {
+                xaxis: `x${index + 1}`,
+                yaxis: `y${index + 1}`,
+              }),
+            });
+          }
+          if (chartType === 'horizontal') {
+            console.log('shapes===== here===');
+            shapes.push(
+              {
+                type: 'rect',
+                xref: `x${index > 0 ? index + 1 : ''}`,
+                yref: `y${index > 0 ? index + 1 : ''}`,
+                x0: 0,
+                y0: index,
+                // x1: 0.5,
+                // y1: 0.5,
+                xsizemode: 'scaled',
+                line: {
+                  color: PLOTLY_COLOR[index % PLOTLY_COLOR.length],
+                  width: 3,
+                },
+                fillcolor: PLOTLY_COLOR[index % PLOTLY_COLOR.length],
+                layer: 'below',
+              }
+              // {
+              //   type: 'rect',
+              //   xref: `paper`,
+              //   yref: `paper`,
+              //   x0: 0,
+              //   y0: index,
+              //   x1: 1,
+              //   y1: 1,
+              //   xsizemode: 'scaled',
+              //   line: {
+              //     color: PLOTLY_COLOR[index % PLOTLY_COLOR.length],
+              //     width: 3,
+              //   },
+              //   fillcolor: PLOTLY_COLOR[index % PLOTLY_COLOR.length],
+              //   layer: 'below',
+              // }
+            );
 
-        return prev.concat(trace);
-      }, []);
+            annotations = annotations.concat([
+              {
+                showarrow: false,
+                valign: 'middle',
+                // text: curr.field_name_no_br,
+                text: 'one',
+                x: 0,
+                y: 0.5,
+                xref: `x${index > 0 ? index + 1 : ''}`,
+                yref: `y${index > 0 ? index + 1 : ''}`,
+                // xref: "paper",
+                // yref: "paper",
+                font: {
+                  size: titleSize || 24,
+                  color: '#fff',
+                },
+              },
+              {
+                showarrow: false,
+                valign: 'middle',
+                // text: curr.value,
+                text: 'two',
+                x: 1,
+                y: 1,
+                xref: `x${index > 0 ? index + 1 : ''}`,
+                yref: `y${index > 0 ? index + 1 : ''}`,
+                font: {
+                  size: titleSize || 24,
+                  color: '#fff',
+                },
+              },
+            ]);
+            console.log('annotations====@@@@', annotations);
+          }
+          return prev.concat(trace);
+        }, []);
+      } else {
+        // chart type horizontal/textmode
+        return calculatedStatsData.map(() => {
+          
+        })
+      }
     }
     return calculatedStatsData;
   }, [
@@ -261,6 +350,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
   ]);
 
   console.log('shapes====', shapes);
+  console.log('annotations==', annotations);
   const mergedLayout = useMemo(() => {
     return {
       grid: {
@@ -307,7 +397,8 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       },
       ...(chartType === 'horizontal'
         ? {
-            shapes,
+            // shapes,
+            // annotations,
           }
         : {}),
     };
