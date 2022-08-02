@@ -164,13 +164,13 @@ export const DefaultGaugeChartParameters: DefaultGaugeChartParametersProps = {
 export interface DefaultStatsParametersProps {
   StatsTextMode: string;
   Orientation: string;
-  DataSlice: number;
+  TextSize: number;
   ChartType: string;
 }
 
 export const DefaultStatsParameters: DefaultStatsParametersProps = {
   StatsTextMode: 'auto',
   Orientation: 'auto',
-  DataSlice: -1,
+  TextSize: 16,
   ChartType: 'auto'
 };

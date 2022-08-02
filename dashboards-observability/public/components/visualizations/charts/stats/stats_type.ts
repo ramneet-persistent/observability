@@ -80,17 +80,10 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
                 },
               },
               {
-                title: 'Title Size',
-                name: 'Title Size',
+                title: 'Text Size',
+                name: 'Text Size',
                 component: InputFieldItem,
-                mapTo: 'titleSize',
-                eleType: 'input',
-              },
-              {
-                title: 'Value Size',
-                name: 'Value Size',
-                component: InputFieldItem,
-                mapTo: 'valueSize',
+                mapTo: 'textSize',
                 eleType: 'input',
               },
               {
