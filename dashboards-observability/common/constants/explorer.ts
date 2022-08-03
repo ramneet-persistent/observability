@@ -154,11 +154,18 @@ export const DefaultGaugeChartParameters: DefaultGaugeChartParametersProps = {
 }
 
 // stats constants
-export const MAX_GRID_LENGTH = 10;
-export const GAP_BETWEEN_AXIS = 0.01
+export const STATS_MAX_GRID_LENGTH = 10;
+export const STATS_GAP_BETWEEN_AXIS = 0.01
+export const STATS_AXIS_MARGIN =  {
+  l: 0,
+  r: 0,
+  b: 0,
+  t: 0,
+}
+
 export interface DefaultStatsParametersProps {
-  StatsTextMode: string;
-  Orientation: string;
+  StatsDefaultTextMode: string;
+  DefaultOrientation: string;
   TextSize: number;
   ChartType: string;
   TextColor: string;
@@ -166,8 +173,8 @@ export interface DefaultStatsParametersProps {
 }
 
 export const DefaultStatsParameters: DefaultStatsParametersProps = {
-  StatsTextMode: 'auto',
-  Orientation: 'auto',
+  StatsDefaultTextMode: 'auto',
+  DefaultOrientation: 'auto',
   TextSize: 16,
   ChartType: 'auto',
   TextColor: 'rgb(0,0,0)',
