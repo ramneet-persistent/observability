@@ -166,11 +166,15 @@ export interface DefaultStatsParametersProps {
   Orientation: string;
   TextSize: number;
   ChartType: string;
+  TextColor: string;
+  TextAlignment: string;
 }
 
 export const DefaultStatsParameters: DefaultStatsParametersProps = {
   StatsTextMode: 'auto',
   Orientation: 'auto',
   TextSize: 16,
-  ChartType: 'auto'
+  ChartType: 'auto',
+  TextColor: 'rgb(0,0,0)',
+  TextAlignment: 'auto'
 };

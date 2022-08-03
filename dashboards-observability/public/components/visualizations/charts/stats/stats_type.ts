@@ -14,14 +14,17 @@ import {
   InputFieldItem,
   ButtonGroupItem,
   ConfigChartOptions,
+  ColorPalettePicker,
 } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls';
 import { ConfigAvailability } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_availability';
 import { DefaultChartStyles } from '../../../../../common/constants/shared';
 import { DefaultStatsParameters } from '../../../../../common/constants/explorer';
+import { SINGLE_COLOR_PALETTE } from '../../../../../common/constants/colors';
+
 const sharedConfigs = getPlotlySharedConfigs();
 const VIS_CATEGORY = getPlotlyCategory();
 const { LegendPosition } = DefaultChartStyles;
-const { StatsTextMode } = DefaultStatsParameters;
+const { StatsTextMode, TextAlignment } = DefaultStatsParameters;
 
 export const createStatsTypeDefinition = (params: any = {}) => ({
   name: 'Stats',
@@ -86,6 +89,19 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
                 mapTo: 'textSize',
                 eleType: 'input',
               },
+              // {
+              //   name: 'Text Alignment',
+              //   component: ButtonGroupItem,
+              //   mapTo: 'textAlign',
+              //   eleType: 'buttons',
+              //   props: {
+              //     options: [
+              //       { name: 'Auto', id: 'auto' },
+              //       { name: 'Center', id: 'center' },
+              //     ],
+              //     defaultSelections: [{ name: 'Auto', id: TextAlignment }],
+              //   },
+              // },
               {
                 name: 'Text Mode',
                 component: ButtonGroupItem,
@@ -94,12 +110,27 @@ export const createStatsTypeDefinition = (params: any = {}) => ({
                 props: {
                   options: [
                     { name: 'Auto', id: 'auto' },
-                    { name: 'Values + Names', id: 'values+names' },
                     { name: 'Names', id: 'names' },
                     { name: 'Values', id: 'values' },
+                    { name: 'Values + Names', id: 'values+names' },
                   ],
                   defaultSelections: [{ name: 'Values + Names', id: StatsTextMode }],
                 },
+              },
+              {
+                name: 'Text Color',
+                isSingleSelection: true,
+                component: ColorPalettePicker,
+                mapTo: 'textColor',
+                eleType: 'treemapColorPicker',
+                options: [
+                  {
+                    value: SINGLE_COLOR_PALETTE,
+                    title: 'Single color',
+                    type: 'text',
+                  },
+                ],
+                defaultState: { name: SINGLE_COLOR_PALETTE },
               },
             ],
           },
