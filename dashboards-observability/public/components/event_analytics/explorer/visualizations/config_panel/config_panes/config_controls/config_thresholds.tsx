@@ -53,10 +53,10 @@ export const ConfigThresholds = ({
       name: '',
       color: '#FC0505',
       value: 0,
-      isReadOnly: false
+      isReadOnly: false,
     };
   };
-  
+
   const handleAddThreshold = useCallback(() => {
     let res = vizState;
     if (isEmpty(vizState)) res = [];
@@ -146,11 +146,13 @@ export const ConfigThresholds = ({
                       />
                     </EuiFormRow>
                   </EuiFlexItem>
-                  <EuiFlexItem grow={1}>
-                    <EuiFormRow>
-                      <EuiIcon type="trash" onClick={handleThresholdDelete(thr.thid)} />
-                    </EuiFormRow>
-                  </EuiFlexItem>
+                  {!thr.isReadOnly && (
+                    <EuiFlexItem grow={1}>
+                      <EuiFormRow>
+                        <EuiIcon type="trash" onClick={handleThresholdDelete(thr.thid)} />
+                      </EuiFormRow>
+                    </EuiFlexItem>
+                  )}
                 </EuiFlexGroup>
               </EuiFormRow>
             </Fragment>
