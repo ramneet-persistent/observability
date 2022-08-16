@@ -142,20 +142,18 @@ export const createPieTypeDefinition = (params: any) => ({
   visconfig: {
     layout: {
       ...sharedConfigs.layout,
-      ...{
-        colorway: PLOTLY_COLOR,
-        plot_bgcolor: 'rgba(0, 0, 0, 0)',
-        paper_bgcolor: 'rgba(0, 0, 0, 0)',
-        xaxis: {
-          fixedrange: true,
-          showgrid: false,
-          visible: true,
-        },
-        yaxis: {
-          fixedrange: true,
-          showgrid: false,
-          visible: true,
-        },
+      colorway: PLOTLY_COLOR,
+      plot_bgcolor: 'rgba(0, 0, 0, 0)',
+      paper_bgcolor: 'rgba(0, 0, 0, 0)',
+      xaxis: {
+        fixedrange: true,
+        showgrid: false,
+        visible: true,
+      },
+      yaxis: {
+        fixedrange: true,
+        showgrid: false,
+        visible: true,
       },
     },
     config: {
