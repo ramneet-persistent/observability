@@ -194,6 +194,7 @@ export interface DefaultStatsParametersProps {
   TextAlignment: string;
   DefaultPrecision: number;
   DefaultValueSize: number;
+  DefaultTextColor: string;
   BaseThreshold: ThresholdUnitType;
 }
 
@@ -205,6 +206,7 @@ export const DefaultStatsParameters: DefaultStatsParametersProps = {
   DefaultChartType: 'auto',
   TextAlignment: 'auto',
   DefaultPrecision: 1,
+  DefaultTextColor: '#FFFFFF',
   BaseThreshold: {
     thid: htmlIdGenerator('thr')(),
     name: 'Base',

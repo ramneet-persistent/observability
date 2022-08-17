@@ -3449,6 +3449,24 @@ exports[`Config panel component Renders config panel with visualization data 1`]
                                   ],
                                 },
                               },
+                              Object {
+                                "component": [Function],
+                                "defaultState": Object {
+                                  "color": "#FFFFFF",
+                                  "name": "singleColor",
+                                },
+                                "eleType": "treemapColorPicker",
+                                "isSingleSelection": true,
+                                "mapTo": "textColor",
+                                "name": "Text Color",
+                                "options": Array [
+                                  Object {
+                                    "title": "Single color",
+                                    "type": "text",
+                                    "value": "singleColor",
+                                  },
+                                ],
+                              },
                             ],
                           },
                           Object {

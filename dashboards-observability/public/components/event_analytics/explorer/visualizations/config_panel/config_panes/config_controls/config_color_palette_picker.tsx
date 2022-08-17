@@ -36,7 +36,7 @@ export const ColorPalettePicker = ({
     parentColors: parentColors ?? [],
   });
 
-  const [childColor, setChildColor] = useState('#000000');
+  const [childColor, setChildColor] = useState(selectedColor?.color ||'#000000');
   const [parentColors, setParentColors] = useState<string[]>([]);
 
   useEffect(() => {

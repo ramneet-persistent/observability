@@ -4,91 +4,66 @@
  */
 
 import React, { useMemo, useCallback, Fragment } from 'react';
-import { EuiAccordion, EuiSpacer, EuiForm } from '@elastic/eui';
-import { PanelItem } from './config_panel_item';
-import { SPECTRUM, OPACITY } from '../../../../../../../../common/constants/colors';
+import { EuiAccordion, EuiSpacer } from '@elastic/eui';
+import { ButtonGroupItem } from './config_button_group';
+import { IConfigPanelOptionSection } from '../../../../../../../../common/types/explorer';
 import {
+  DefaultStatsParameters,
   ConfigChartOptionsEnum,
   NUMBER_INPUT_MIN_LIMIT,
 } from '../../../../../../../../common/constants/explorer';
 
-export const ConfigChartOptions = ({
+export const ConfigStatChartStyles = ({
   visualizations,
   schemas,
   vizState,
   handleConfigChange,
+  sectionName,
+  sectionId = 'chartStyles',
 }: any) => {
   const { data } = visualizations;
-  const { data: vizData = {}, metadata: { fields = [] } = {}, tree_map } = data?.rawVizData;
+  const { data: vizData = {}, metadata: { fields = [] } = {} } = data?.rawVizData;
 
   const handleConfigurationChange = useCallback(
-    (stateFiledName) => {
+    (stateFieldName) => {
       return (changes) => {
         handleConfigChange({
           ...vizState,
-          [stateFiledName]: changes,
+          [stateFieldName]: changes,
         });
       };
     },
     [handleConfigChange, vizState]
   );
 
+  /* To update the schema options based on current style mode selection */
   const currentSchemas = useMemo(() => {
-    if (vizState.colorMode === undefined || vizState.colorMode[0].name === SPECTRUM) {
-      return schemas.filter((schema) => schema.mapTo !== 'color');
-    }
-    if (vizState.colorMode && vizState.colorMode[0].name === OPACITY) {
-      return schemas.filter((schema) => schema.mapTo !== 'scheme');
+    if (
+      vizState?.chartType === DefaultStatsParameters.DefaultChartType ||
+      vizState?.chartType === undefined
+    ) {
+      return schemas.filter((schema: IConfigPanelOptionSection) => schema.mapTo !== 'textColor');
     }
     return schemas;
   }, [vizState]);
 
-  const dimensions = useMemo(() => {
-    return (
+  const dimensions = useMemo(
+    () =>
       currentSchemas &&
-      currentSchemas.map((schema, index) => {
+      currentSchemas.map((schema: IConfigPanelOptionSection, index: number) => {
+        const DimensionComponent = schema.component || ButtonGroupItem;
         let params = {
           title: schema.name,
           vizState,
           ...schema.props,
         };
-        const DimensionComponent = schema.component || PanelItem;
-
         switch (schema.eleType) {
-          case ConfigChartOptionsEnum.palettePicker:
-            params = {
-              ...params,
-              colorPalettes: schema.options || [],
-              selectedColor: vizState[schema.mapTo] || schema.defaultState,
-              onSelectChange: handleConfigurationChange(schema.mapTo),
-            };
-            break;
-
-          case ConfigChartOptionsEnum.singleColorPicker:
-            params = {
-              ...params,
-              selectedColor: vizState[schema.mapTo] || schema.defaultState,
-              onSelectChange: handleConfigurationChange(schema.mapTo),
-            };
-            break;
-
-          case ConfigChartOptionsEnum.colorpicker:
-            params = {
-              ...params,
-              selectedColor: vizState[schema.mapTo] || schema?.defaultState,
-              colorPalettes: schema.options || [],
-              onSelectChange: handleConfigurationChange(schema.mapTo),
-            };
-            break;
-
           case ConfigChartOptionsEnum.treemapColorPicker:
             params = {
               ...params,
               selectedColor: vizState[schema.mapTo] || schema?.defaultState,
               colorPalettes: schema.options || [],
-              numberOfParents:
-                (tree_map?.dataConfig?.dimensions !== undefined &&
-                  tree_map?.dataConfig.dimensions[0].parentFields.length) | 0,
+              numberOfParents: 0,
               onSelectChange: handleConfigurationChange(schema.mapTo),
             };
             break;
@@ -111,24 +86,6 @@ export const ConfigChartOptions = ({
               currentValue: vizState[schema.mapTo] || '',
               name: schema.mapTo,
               handleInputChange: handleConfigurationChange(schema.mapTo),
-            };
-            break;
-
-          case ConfigChartOptionsEnum.slider:
-            params = {
-              ...params,
-              maxRange: schema.props.max,
-              currentRange: vizState[schema.mapTo] || schema?.defaultState,
-              handleSliderChange: handleConfigurationChange(schema.mapTo),
-            };
-            break;
-
-          case ConfigChartOptionsEnum.switchButton:
-            params = {
-              ...params,
-              title: schema.name,
-              currentValue: vizState[schema.mapTo],
-              onToggle: handleConfigurationChange(schema.mapTo),
             };
             break;
 
@@ -158,24 +115,21 @@ export const ConfigChartOptions = ({
             };
             break;
         }
-
         return (
           <Fragment key={`viz-series-${index}`}>
-            <EuiForm component="form">
-              <DimensionComponent {...params} />
-              <EuiSpacer size="s" />
-            </EuiForm>
+            <DimensionComponent {...params} />
+            <EuiSpacer size="s" />
           </Fragment>
         );
-      })
-    );
-  }, [currentSchemas, vizState, handleConfigurationChange]);
+      }),
+    [currentSchemas, vizState, handleConfigurationChange]
+  );
 
   return (
     <EuiAccordion
       initialIsOpen
-      id="configPanel__chartStyles"
-      buttonContent="Chart styles"
+      id={`configPanel__${sectionId}`}
+      buttonContent={sectionName}
       paddingSize="s"
     >
       {dimensions}

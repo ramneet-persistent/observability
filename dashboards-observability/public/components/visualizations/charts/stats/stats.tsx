@@ -35,6 +35,7 @@ const {
   DefaultTextMode,
   DefaultChartType,
   BaseThreshold,
+  DefaultTextColor,
 } = DefaultStatsParameters;
 
 interface createAnnotationType {
@@ -62,11 +63,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
   const metricsLength = metrics.length;
   const chartType = dataConfig?.chartStyles?.chartType || vis.charttype;
 
-  if (
-    (chartType === DefaultChartType && dimensions.length === 0) ||
-    metricsLength === 0 ||
-    chartType !== DefaultChartType
-  )
+  if ((chartType === DefaultChartType && dimensions.length === 0) || metricsLength === 0)
     return <EmptyPlaceholder icon={visualizations?.vis?.icontype} />;
 
   // style panel parameters
@@ -77,7 +74,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
     thresholds.slice().sort((a: ThresholdUnitType, b: ThresholdUnitType) => a.value - b.value),
     'value'
   );
-  const titleSize =
+  let titleSize =
     dataConfig?.chartStyles?.titleSize ||
     vis.titlesize - vis.titlesize * metricsLength * STATS_REDUCE_TITLE_SIZE_PERCENTAGE;
   const valueSize =
@@ -89,7 +86,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       ? DefaultOrientation
       : 'h';
   const selectedTextMode = dataConfig?.chartStyles?.textMode || vis.textmode;
-  const textMode =
+  let textMode =
     selectedTextMode === DefaultTextMode || selectedTextMode === 'values+names'
       ? DefaultTextMode
       : selectedTextMode;
@@ -98,11 +95,19 @@ export const Stats = ({ visualizations, layout, config }: any) => {
     dataConfig?.chartStyles?.metricUnits?.substring(0, STATS_METRIC_UNIT_SUBSTRING_LENGTH) || '';
   const metricUnitsSize = valueSize - valueSize * STATS_REDUCE_METRIC_UNIT_SIZE_PERCENTAGE;
   const isDarkMode = uiSettingsService.get('theme:darkMode');
+  const textColor = dataConfig?.chartStyles?.textColor?.childColor || DefaultTextColor;
+
+  if (chartType === 'text' && dataConfig?.chartStyles?.textMode === undefined) {
+    textMode = 'names';
+    titleSize = vis.titlesize
+  }
 
   // margin from left of grid cell for label/value
   const ANNOTATION_MARGIN_LEFT = metricsLength > 1 ? 0.01 : 0;
-  let autoChartLayout: object = {
+
+  let chartLayout: object = {
     annotations: [],
+    shapes: [],
   };
 
   const selectedDimensionsData = dimensions.reduce((prev, cur) => {
@@ -117,7 +122,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       metricUnits ? `<span style="font-size: ${metricUnitsSize}px"}> ${metricUnits}</span>` : ''
     }</b>`;
 
-  const createAnnotationsHorizontalOrientation = ({
+  const createAnnotationsAutoModeHorizontal = ({
     label,
     value,
     index,
@@ -128,10 +133,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
           {
             ...STATS_ANNOTATION,
             x: 0 + ANNOTATION_MARGIN_LEFT,
-            y:
-              index > 0
-                ? (index + 1) / metricsLength
-                : 1 / metricsLength,
+            y: index > 0 ? (index + 1) / metricsLength : 1 / metricsLength,
             xanchor: 'left',
             yanchor: 'top',
             text: label,
@@ -146,10 +148,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
           {
             ...STATS_ANNOTATION,
             x: 1,
-            y:
-              index > 0
-                ? (index + 1) / metricsLength
-                : 1 / metricsLength,
+            y: index > 0 ? (index + 1) / metricsLength : 1 / metricsLength,
             xanchor: 'right',
             yanchor: 'top',
             text: createValueText(value),
@@ -186,7 +185,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
         ];
   };
 
-  const createAnnotationVerticalOrientation = ({
+  const createAnnotationAutoModeVertical = ({
     label,
     value,
     index,
@@ -273,25 +272,25 @@ export const Stats = ({ visualizations, layout, config }: any) => {
         index: metricIndex,
         valueColor: '',
       };
-      autoChartLayout = {
-        ...autoChartLayout,
-        annotations: autoChartLayout.annotations.concat(
+      chartLayout = {
+        ...chartLayout,
+        annotations: chartLayout.annotations.concat(
           orientation === DefaultOrientation || metricsLength === 1
-            ? createAnnotationVerticalOrientation(annotationOption)
-            : createAnnotationsHorizontalOrientation(annotationOption)
+            ? createAnnotationAutoModeVertical(annotationOption)
+            : createAnnotationsAutoModeHorizontal(annotationOption)
         ),
         [`xaxis${metricIndex > 0 ? metricIndex + 1 : ''}`]: {
           visible: false,
           showgrid: false,
           anchor: `y${metricIndex > 0 ? metricIndex + 1 : ''}`,
-          layoutFor: metric.label
+          layoutFor: metric.label,
         },
         [`yaxis${metricIndex > 0 ? metricIndex + 1 : ''}`]: {
           visible: false,
           showgrid: false,
           anchor: `x${metricIndex > 0 ? metricIndex + 1 : ''}`,
           range: [0, extendYaxisRange(metric)],
-          layoutFor: metric.label
+          layoutFor: metric.label,
         },
       };
 
@@ -315,26 +314,258 @@ export const Stats = ({ visualizations, layout, config }: any) => {
     });
   };
 
+  const createAnnotationTextModeVertical = ({
+    label,
+    value,
+    index,
+    valueColor,
+  }: createAnnotationType) => {
+    return textMode === DefaultTextMode
+      ? [
+          {
+            ...STATS_ANNOTATION,
+            xanchor: 'left',
+            yanchor: metricsLength === 1 ? 'center' : 'bottom',
+            text: label,
+            font: {
+              size: titleSize,
+              color: textColor,
+              family: 'Roboto',
+            },
+            x:
+              metricsLength === 1
+                ? 0 + ANNOTATION_MARGIN_LEFT
+                : index / metricsLength + ANNOTATION_MARGIN_LEFT,
+            y: 0.5,
+            metricValue: value,
+            type: 'name',
+          },
+          {
+            ...STATS_ANNOTATION,
+            xanchor: metricsLength === 1 ? 'right' : 'left',
+            yanchor: metricsLength === 1 ? 'center' : 'top',
+            text: createValueText(value),
+            font: {
+              size: valueSize,
+              color: textColor,
+              family: 'Roboto',
+            },
+            x:
+              metricsLength === 1
+                ? 1 - ANNOTATION_MARGIN_LEFT
+                : index / metricsLength + ANNOTATION_MARGIN_LEFT,
+            y: 0.5,
+            type: 'value',
+            metricValue: value,
+          },
+        ]
+      : [
+          {
+            ...STATS_ANNOTATION,
+            x:
+              metricsLength === 1
+                ? 0.5
+                : index === 0
+                ? ((1 / metricsLength) * 1) / 2
+                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+            xanchor: 'center',
+            y: 0.5,
+            yanchor: 'center',
+            text: textMode === 'values' ? createValueText(value) : label,
+            font: {
+              size: textMode === 'values' ? valueSize : titleSize,
+              color: textColor,
+              family: 'Roboto',
+            },
+            type: textMode === 'names' ? 'name' : 'value',
+            metricValue: value,
+          },
+        ];
+  };
+
+  const createAnnotationTextModeHorizontal = ({
+    label,
+    value,
+    index,
+    valueColor,
+  }: createAnnotationType) => {
+    return textMode === DefaultTextMode
+      ? [
+          {
+            ...STATS_ANNOTATION,
+            xanchor: 'left',
+            yanchor: 'center',
+            text: label,
+            font: {
+              size: titleSize,
+              color: COLOR_WHITE,
+              family: 'Roboto',
+            },
+            x: 0 + ANNOTATION_MARGIN_LEFT,
+            y:
+              metricsLength === 1
+                ? 0.5
+                : index === 0
+                ? ((1 / metricsLength) * 1) / 2
+                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+            metricValue: value,
+            type: 'name',
+          },
+          {
+            ...STATS_ANNOTATION,
+            xanchor: 'right',
+            yanchor: 'center',
+            text: createValueText(value),
+            font: {
+              size: valueSize,
+              color: COLOR_WHITE,
+              family: 'Roboto',
+            },
+            x: 1 - ANNOTATION_MARGIN_LEFT,
+            y:
+              metricsLength === 1
+                ? 0.5
+                : index === 0
+                ? ((1 / metricsLength) * 1) / 2
+                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+            type: 'value',
+            metricValue: value,
+          },
+        ]
+      : [
+          {
+            ...STATS_ANNOTATION,
+            xanchor: 'center',
+            yanchor: 'center',
+            x: 0.5,
+            y:
+              metricsLength === 1
+                ? 0.5
+                : index === 0
+                ? ((1 / metricsLength) * 1) / 2
+                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+            text: textMode === 'values' ? createValueText(value) : label,
+            font: {
+              size: textMode === 'values' ? valueSize : titleSize,
+              color: COLOR_WHITE,
+              family: 'Roboto',
+            },
+            type: textMode === 'names' ? 'name' : 'value',
+            metricValue: value,
+          },
+        ];
+  };
+
+  const generateRectShapes = () => {
+    const shape = {
+      type: 'rect',
+      xsizemode: 'scaled',
+      layer: 'below',
+      yref: 'paper',
+      xref: 'paper',
+    };
+    const shapes: any = [];
+    metrics.forEach((metric: ConfigListEntry, metricIndex: number) => {
+      chartLayout = {
+        ...chartLayout,
+        annotations: chartLayout.annotations.concat(
+          orientation === DefaultOrientation || metricsLength === 1
+            ? createAnnotationTextModeVertical({
+                label: metric.label,
+                value: getMetricValue(metric.label),
+                index: metricIndex,
+                valueColor: '',
+              })
+            : createAnnotationTextModeHorizontal({
+                label: metric.label,
+                value: getMetricValue(metric.label),
+                index: metricIndex,
+                valueColor: '',
+              })
+        ),
+        [`yaxis${metricIndex > 0 ? metricIndex + 1 : ''}`]: {
+          visible: false,
+          showgrid: false,
+          anchor: `x${metricIndex > 0 ? metricIndex + 1 : ''}`,
+        },
+        [`xaxis${metricIndex > 0 ? metricIndex + 1 : ''}`]: {
+          visible: false,
+          showgrid: false,
+          anchor: `y${metricIndex > 0 ? metricIndex + 1 : ''}`,
+        },
+      };
+      const shapeColor = {
+        line: {
+          color: '',
+          width: 3,
+        },
+        fillcolor: '',
+      };
+      const nonSimilarAxis = orientation === DefaultOrientation ? 'x' : 'y';
+      const similarAxis = orientation === DefaultOrientation ? 'y' : 'x';
+      // for first metric
+      if (metricIndex === 0) {
+        shapes.push({
+          ...shape,
+          ...shapeColor,
+          [`${nonSimilarAxis}0`]: 0,
+          [`${nonSimilarAxis}1`]: 1 / metricsLength,
+          [`${similarAxis}0`]: 0,
+          [`${similarAxis}1`]: 1,
+          metricValue: getMetricValue(metric.label),
+        });
+      } else {
+        shapes.push({
+          ...shape,
+          ...shapeColor,
+          [`${nonSimilarAxis}0`]:
+            shapes[shapes.length - 1][`${nonSimilarAxis}1`] + STATS_GRID_SPACE_BETWEEN_X_AXIS,
+          [`${nonSimilarAxis}1`]:
+            shapes[shapes.length - 1][`${nonSimilarAxis}1`] + 1 / metricsLength,
+          [`${similarAxis}0`]: 0,
+          [`${similarAxis}1`]: 1,
+          metricValue: getMetricValue(metric.label),
+        });
+      }
+    });
+    return shapes;
+  };
+
   const [statsData, statsLayout]: Plotly.Data[] = useMemo(() => {
     let calculatedStatsData: Plotly.Data[] = [];
-    calculatedStatsData = generateLineTraces();
-
-    if (sortedThresholds.length) {
-      const sortedStatsData = calculatedStatsData
+    let sortedStatsData: Plotly.Data[] = [];
+    let sortedShapesData = [];
+    if (chartType === DefaultChartType) {
+      calculatedStatsData = generateLineTraces();
+      sortedStatsData = calculatedStatsData
         .map((stat, statIndex) => ({ ...stat, oldIndex: statIndex }))
         .sort((statCurrent, statNext) => statCurrent.metricValue - statNext.metricValue);
+    } else {
+      const shapes = generateRectShapes();
+      chartLayout = {
+        ...chartLayout,
+        shapes: shapes,
+      };
+      sortedShapesData = shapes
+        .map((shape: object, shapeIndex: number) => ({ ...shape, oldIndex: shapeIndex }))
+        .sort((current: object, next: object) => current.metricValue - next.metricValue);
+    }
+
+    if (sortedThresholds.length) {
       // threshold ranges with min, max values
       const thresholdRanges: Array<Array<number>> = [];
+      const maxValue =
+        chartType === DefaultChartType
+          ? sortedStatsData[sortedStatsData.length - 1].metricValue
+          : sortedShapesData[sortedShapesData.length - 1].metricValue;
       sortedThresholds.forEach((thresh, index) => {
         thresholdRanges.push([
           thresh.value,
-          index === sortedThresholds.length - 1
-            ? sortedStatsData[sortedStatsData.length - 1].metricValue
-            : sortedThresholds[index + 1].value,
+          index === sortedThresholds.length - 1 ? maxValue : sortedThresholds[index + 1].value,
         ]);
       });
 
-      if (thresholdRanges.length) {
+      if (chartType === DefaultChartType) {
         // change color for line traces
         for (let statIndex = 0; statIndex < sortedStatsData.length; statIndex++) {
           for (let threshIndex = 0; threshIndex < thresholdRanges.length; threshIndex++) {
@@ -353,29 +584,46 @@ export const Stats = ({ visualizations, layout, config }: any) => {
             }
           }
         }
-
         // change color of text annotations
         for (
           let annotationIndex = 0;
-          annotationIndex < autoChartLayout.annotations.length;
+          annotationIndex < chartLayout.annotations.length;
           annotationIndex++
         ) {
           for (let threshIndex = 0; threshIndex < thresholdRanges.length; threshIndex++) {
             if (
-              autoChartLayout.annotations[annotationIndex].type === 'value' &&
-              Number(autoChartLayout.annotations[annotationIndex].metricValue) >=
+              chartType === DefaultChartType &&
+              chartLayout.annotations[annotationIndex].type === 'value' &&
+              Number(chartLayout.annotations[annotationIndex].metricValue) >=
                 Number(thresholdRanges[threshIndex][0]) &&
-              Number(autoChartLayout.annotations[annotationIndex].metricValue) <=
+              Number(chartLayout.annotations[annotationIndex].metricValue) <=
                 Number(thresholdRanges[threshIndex][1])
             ) {
-              autoChartLayout.annotations[annotationIndex].font.color =
+              chartLayout.annotations[annotationIndex].font.color =
+                sortedThresholds[threshIndex].color;
+            }
+          }
+        }
+      } else {
+        // change color of shapes
+        for (let shapeIndex = 0; shapeIndex < sortedShapesData.length; shapeIndex++) {
+          for (let threshIndex = 0; threshIndex < thresholdRanges.length; threshIndex++) {
+            if (
+              Number(sortedShapesData[shapeIndex].metricValue) >=
+                Number(thresholdRanges[threshIndex][0]) &&
+              Number(sortedShapesData[shapeIndex].metricValue) <=
+                Number(thresholdRanges[threshIndex][1])
+            ) {
+              chartLayout.shapes[sortedShapesData[shapeIndex].oldIndex].fillcolor =
+                sortedThresholds[threshIndex].color;
+              chartLayout.shapes[sortedShapesData[shapeIndex].oldIndex].line.color =
                 sortedThresholds[threshIndex].color;
             }
           }
         }
       }
     }
-    return [calculatedStatsData, autoChartLayout];
+    return [chartType === DefaultChartType ? calculatedStatsData : [], chartLayout];
   }, [
     dimensions,
     metrics,
@@ -394,7 +642,12 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       ...layout,
       ...(layoutConfig.layout && layoutConfig.layout),
       showlegend: false,
-      margin: STATS_AXIS_MARGIN,
+      margin:
+        chartType === DefaultChartType
+          ? STATS_AXIS_MARGIN
+          : dataConfig?.panelOptions?.title || layoutConfig.layout?.title
+          ? STATS_AXIS_MARGIN
+          : { ...STATS_AXIS_MARGIN, t: 0 },
       ...statsLayout,
       grid: {
         ...(orientation === DefaultOrientation
