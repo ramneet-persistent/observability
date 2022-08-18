@@ -1,0 +1,31 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.metricsContainer {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+  height: 1180px;
+}
+
+.metricValueContainer {
+  padding: 20px 0;
+}
+
+.metricValue {
+  text-align: center;
+}
+
+.aggregateValue {
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.aggregateLabel {
+  font-size: 24px;
+  font-weight: 400;
+}

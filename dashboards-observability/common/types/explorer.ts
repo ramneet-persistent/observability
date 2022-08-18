@@ -274,3 +274,14 @@ export interface ConfigList {
   dimensions?: ConfigListEntry[] | HistogramConfigList[];
   metrics?: ConfigListEntry[];
 }
+
+export interface MetricListEntry {
+  label: string;
+  aggregation: string[];
+  custom_label: string;
+  name: string;
+}
+
+export interface MetricList {
+  metrics?: MetricListEntry[];
+}

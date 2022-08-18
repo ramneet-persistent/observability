@@ -76,6 +76,7 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     } else if (
       visualizations.vis.name !== visChartTypes.HeatMap &&
       visualizations.vis.name !== visChartTypes.Histogram &&
+      visualizations.vis.name !== visChartTypes.Metrics &&
       (data.defaultAxes.xaxis || data.defaultAxes.yaxis)
     ) {
       const { xaxis, yaxis } = data.defaultAxes;
@@ -93,6 +94,10 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     } else if (visualizations.vis.name === visChartTypes.Histogram) {
       setConfigList({
         dimensions: [{ bucketSize: '', bucketOffset: '' }],
+      });
+    } else if (visualizations.vis.name === visChartTypes.Metrics) {
+      setConfigList({
+        metrics: [initialConfigEntry],
       });
     }
   }, [
@@ -311,11 +316,14 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
       <EuiSpacer size="s" />
       {visualizations.vis.name !== visChartTypes.Histogram ? (
         <>
-          <EuiTitle size="xxs">
-            <h3>Dimensions</h3>
-          </EuiTitle>
-          {getCommonUI(configList.dimensions, 'dimensions')}
-
+          {visualizations.vis.name !== visChartTypes.Metrics && (
+            <>
+              <EuiTitle size="xxs">
+                <h3>Dimensions</h3>
+              </EuiTitle>
+              {getCommonUI(configList.dimensions, 'dimensions')}
+            </>
+          )}
           <EuiSpacer size="s" />
           <EuiTitle size="xxs">
             <h3>Metrics</h3>

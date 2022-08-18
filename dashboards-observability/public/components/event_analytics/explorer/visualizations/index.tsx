@@ -18,6 +18,8 @@ import { DataConfigPanelItem } from './config_panel/config_panes/config_controls
 import { TabContext } from '../../hooks';
 import { PPL_STATS_REGEX, visChartTypes } from '../../../../../common/constants/shared';
 import { TreemapConfigPanelItem } from './config_panel/config_panes/config_controls/treemap_config_panel_item';
+import { MetricConfigPanelItem } from './config_panel/config_panes/config_controls/metric_config_panel_item';
+
 interface IExplorerVisualizationsProps {
   query: IQuery;
   curVisId: string;
@@ -54,6 +56,34 @@ export const ExplorerVisualizations = ({
   const fieldOptionList = fields.map((field) => {
     return { ...field, label: field.name };
   });
+
+  const renderConfigPanelItem = () => {
+    if (curVisId === visChartTypes.TreeMap) {
+      return (
+        <TreemapConfigPanelItem
+          fieldOptionList={fieldOptionList}
+          visualizations={visualizations}
+          tabID={tabId}
+        />
+      );
+    } else if (curVisId === visChartTypes.Metrics) {
+      return (
+        <MetricConfigPanelItem
+          fieldOptionList={fieldOptionList}
+          visualizations={visualizations}
+          tabID={tabId}
+        />
+      );
+    } else {
+      return (
+        <DataConfigPanelItem
+          fieldOptionList={fieldOptionList}
+          visualizations={visualizations}
+          tabID={tabId}
+        />
+      );
+    }
+  };
 
   return (
     <EuiResizableContainer>
@@ -98,19 +128,7 @@ export const ExplorerVisualizations = ({
           >
             <EuiSpacer size="s" />
             <EuiPanel paddingSize="s" className="dataConfigContainer">
-              {curVisId === visChartTypes.TreeMap ? (
-                <TreemapConfigPanelItem
-                  fieldOptionList={fieldOptionList}
-                  visualizations={visualizations}
-                  tabID={tabId}
-                />
-              ) : (
-                <DataConfigPanelItem
-                  fieldOptionList={fieldOptionList}
-                  visualizations={visualizations}
-                  tabID={tabId}
-                />
-              )}
+            {renderConfigPanelItem()}
             </EuiPanel>
           </EuiResizablePanel>
 
