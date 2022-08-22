@@ -5,6 +5,7 @@
 
 import { LONG_CHART_COLOR } from '../common/constants/shared';
 import { createBarTypeDefinition } from '../public/components/visualizations/charts/bar/bar_type';
+import { createStatsTypeDefinition } from '../public/components/visualizations/charts/stats/stats_type';
 import {
   SELECTED_FIELDS,
   AVAILABLE_FIELDS as AVAILABLE_FIELDS_NAME,
@@ -508,6 +509,11 @@ export const EXPLORER_VISUALIZATIONS = {
   },
 };
 
+export const VALUE_OPTIONS = {
+  dimensions: [{ name: 'tags', type: 'text', label: 'tags' }],
+  metrics: [{ name: 'count()', type: 'integer', label: 'count()', side: 'left' }],
+};
+
 export const TEST_VISUALIZATIONS_DATA = {
   data: {
     appData: {fromApp: false},
@@ -531,4 +537,9 @@ export const PIE_TEST_VISUALIZATIONS_DATA = {
   vis: {
     ...TEST_VISUALIZATIONS_DATA.vis
   }
+};
+
+export const STATS_TEST_VISUALIZATIONS_DATA = {
+  ...TEST_VISUALIZATIONS_DATA,
+  vis: createStatsTypeDefinition({})
 };
