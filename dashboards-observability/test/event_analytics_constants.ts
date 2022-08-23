@@ -521,7 +521,11 @@ export const TEST_VISUALIZATIONS_DATA = {
     indexFields: EXPLORER_FIELDS,
     query: {},
     rawVizData: EXPLORER_VISUALIZATIONS,
-    userConfigs: {}
+    userConfigs: {
+      dataConfig: {
+        valueOptions: VALUE_OPTIONS,
+      }
+    }
   },
   vis: createBarTypeDefinition({})
 };
