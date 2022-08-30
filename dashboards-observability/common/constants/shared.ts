@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { IField } from '../../common/types/explorer';
 import CSS from 'csstype';
+import { IField } from '../../common/types/explorer';
 
 // Client route
 export const PPL_BASE = '/api/ppl';
@@ -111,10 +111,10 @@ export const ENABLED_VIS_TYPES = [
   visChartTypes.Histogram,
   visChartTypes.Scatter,
   visChartTypes.LogsView,
-  visChartTypes.Stats
+  visChartTypes.Stats,
 ];
 
-//Live tail constants
+// Live tail constants
 export const LIVE_OPTIONS = [
   {
     label: '5s',
