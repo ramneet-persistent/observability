@@ -343,7 +343,7 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
                         "component": [Function],
                         "defaultState": 0,
                         "eleType": "slider",
-                        "mapTo": "rotateBarLabels",
+                        "mapTo": "labelAngle",
                         "name": "Rotate bar labels",
                         "props": Object {
                           "max": 90,
@@ -403,16 +403,18 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
                         "name": "Line width",
                         "props": Object {
                           "max": 10,
+                          "min": 1,
                         },
                       },
                       Object {
                         "component": [Function],
-                        "defaultState": 80,
+                        "defaultState": 40,
                         "eleType": "slider",
                         "mapTo": "fillOpacity",
                         "name": "Fill opacity",
                         "props": Object {
                           "max": 100,
+                          "min": 0,
                         },
                       },
                     ],
@@ -441,7 +443,7 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
               },
             ],
           },
-          "fillOpacity": 80,
+          "fillopacity": 40,
           "fulllabel": "Vertical bar",
           "groupwidth": 0.7,
           "icon": [Function],
@@ -827,7 +829,7 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
                           "component": [Function],
                           "defaultState": 0,
                           "eleType": "slider",
-                          "mapTo": "rotateBarLabels",
+                          "mapTo": "labelAngle",
                           "name": "Rotate bar labels",
                           "props": Object {
                             "max": 90,
@@ -887,16 +889,18 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
                           "name": "Line width",
                           "props": Object {
                             "max": 10,
+                            "min": 1,
                           },
                         },
                         Object {
                           "component": [Function],
-                          "defaultState": 80,
+                          "defaultState": 40,
                           "eleType": "slider",
                           "mapTo": "fillOpacity",
                           "name": "Fill opacity",
                           "props": Object {
                             "max": 100,
+                            "min": 0,
                           },
                         },
                       ],
@@ -925,7 +929,7 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
                 },
               ],
             },
-            "fillOpacity": 80,
+            "fillopacity": 40,
             "fulllabel": "Vertical bar",
             "groupwidth": 0.7,
             "icon": [Function],
@@ -1334,7 +1338,7 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
                             "component": [Function],
                             "defaultState": 0,
                             "eleType": "slider",
-                            "mapTo": "rotateBarLabels",
+                            "mapTo": "labelAngle",
                             "name": "Rotate bar labels",
                             "props": Object {
                               "max": 90,
@@ -1394,16 +1398,18 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
                             "name": "Line width",
                             "props": Object {
                               "max": 10,
+                              "min": 1,
                             },
                           },
                           Object {
                             "component": [Function],
-                            "defaultState": 80,
+                            "defaultState": 40,
                             "eleType": "slider",
                             "mapTo": "fillOpacity",
                             "name": "Fill opacity",
                             "props": Object {
                               "max": 100,
+                              "min": 0,
                             },
                           },
                         ],
@@ -1432,7 +1438,7 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
                   },
                 ],
               },
-              "fillOpacity": 80,
+              "fillopacity": 40,
               "fulllabel": "Vertical bar",
               "groupwidth": 0.7,
               "icon": [Function],
@@ -1489,7 +1495,7 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
               Object {
                 "hoverinfo": "all",
                 "marker": Object {
-                  "color": "rgba(60,161,199,0.4)",
+                  "color": "rgba(60,161,199,0.2)",
                   "line": Object {
                     "color": "#3CA1C7",
                     "width": 1,
@@ -1567,7 +1573,7 @@ exports[`Utils helper functions renders displayVisualization function 1`] = `
                 Object {
                   "hoverinfo": "all",
                   "marker": Object {
-                    "color": "rgba(60,161,199,0.4)",
+                    "color": "rgba(60,161,199,0.2)",
                     "line": Object {
                       "color": "#3CA1C7",
                       "width": 1,
@@ -2040,6 +2046,7 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                         "name": "Line width",
                         "props": Object {
                           "max": 10,
+                          "min": 1,
                         },
                       },
                       Object {
@@ -2050,16 +2057,18 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                         "name": "Fill opacity",
                         "props": Object {
                           "max": 100,
+                          "min": 0,
                         },
                       },
                       Object {
                         "component": [Function],
                         "defaultState": 5,
                         "eleType": "slider",
-                        "mapTo": "pointSize",
+                        "mapTo": "markerSize",
                         "name": "Point size",
                         "props": Object {
-                          "max": 40,
+                          "max": 10,
+                          "min": 0,
                         },
                       },
                       Object {
@@ -2073,7 +2082,7 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                         "component": [Function],
                         "defaultState": 0,
                         "eleType": "slider",
-                        "mapTo": "rotateLabels",
+                        "mapTo": "labelangle",
                         "name": "Rotate labels",
                         "props": Object {
                           "max": 90,
@@ -2137,15 +2146,16 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
               },
             ],
           },
+          "fillopacity": 40,
           "fulllabel": "Time series",
           "icon": [Function],
           "icontype": "visLine",
           "id": "line",
           "label": "Time series",
+          "labelangle": 0,
+          "linewidth": 2,
+          "markersize": 5,
           "name": "line",
-          "selection": Object {
-            "dataLoss": "nothing",
-          },
           "seriesaxis": "yaxis",
           "type": "line",
           "visconfig": Object {
@@ -2577,6 +2587,7 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                           "name": "Line width",
                           "props": Object {
                             "max": 10,
+                            "min": 1,
                           },
                         },
                         Object {
@@ -2587,16 +2598,18 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                           "name": "Fill opacity",
                           "props": Object {
                             "max": 100,
+                            "min": 0,
                           },
                         },
                         Object {
                           "component": [Function],
                           "defaultState": 5,
                           "eleType": "slider",
-                          "mapTo": "pointSize",
+                          "mapTo": "markerSize",
                           "name": "Point size",
                           "props": Object {
-                            "max": 40,
+                            "max": 10,
+                            "min": 0,
                           },
                         },
                         Object {
@@ -2610,7 +2623,7 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                           "component": [Function],
                           "defaultState": 0,
                           "eleType": "slider",
-                          "mapTo": "rotateLabels",
+                          "mapTo": "labelangle",
                           "name": "Rotate labels",
                           "props": Object {
                             "max": 90,
@@ -2674,15 +2687,16 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                 },
               ],
             },
+            "fillopacity": 40,
             "fulllabel": "Time series",
             "icon": [Function],
             "icontype": "visLine",
             "id": "line",
             "label": "Time series",
+            "labelangle": 0,
+            "linewidth": 2,
+            "markersize": 5,
             "name": "line",
-            "selection": Object {
-              "dataLoss": "nothing",
-            },
             "seriesaxis": "yaxis",
             "type": "line",
             "visconfig": Object {
@@ -3168,6 +3182,7 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                             "name": "Line width",
                             "props": Object {
                               "max": 10,
+                              "min": 1,
                             },
                           },
                           Object {
@@ -3178,16 +3193,18 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                             "name": "Fill opacity",
                             "props": Object {
                               "max": 100,
+                              "min": 0,
                             },
                           },
                           Object {
                             "component": [Function],
                             "defaultState": 5,
                             "eleType": "slider",
-                            "mapTo": "pointSize",
+                            "mapTo": "markerSize",
                             "name": "Point size",
                             "props": Object {
-                              "max": 40,
+                              "max": 10,
+                              "min": 0,
                             },
                           },
                           Object {
@@ -3201,7 +3218,7 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                             "component": [Function],
                             "defaultState": 0,
                             "eleType": "slider",
-                            "mapTo": "rotateLabels",
+                            "mapTo": "labelangle",
                             "name": "Rotate labels",
                             "props": Object {
                               "max": 90,
@@ -3265,15 +3282,16 @@ exports[`Utils helper functions renders displayVisualization function 2`] = `
                   },
                 ],
               },
+              "fillopacity": 40,
               "fulllabel": "Time series",
               "icon": [Function],
               "icontype": "visLine",
               "id": "line",
               "label": "Time series",
+              "labelangle": 0,
+              "linewidth": 2,
+              "markersize": 5,
               "name": "line",
-              "selection": Object {
-                "dataLoss": "nothing",
-              },
               "seriesaxis": "yaxis",
               "type": "line",
               "visconfig": Object {
