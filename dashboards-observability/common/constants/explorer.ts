@@ -120,7 +120,16 @@ export const AGGREGATION_OPTIONS = [
 ];
 
 // numeric fields type for metrics
-export const numericalTypes = ['float', 'double', 'bigint', 'long', 'octet', 'short', 'byte', 'integer'];
+export const numericalTypes = [
+  'float',
+  'double',
+  'bigint',
+  'long',
+  'octet',
+  'short',
+  'byte',
+  'integer',
+];
 // Data table constants
 export const GRID_HEADER_COLUMN_MAX_WIDTH = '150px';
 export const GRID_PAGE_RANGE_DISPLAY = 5;
@@ -136,13 +145,13 @@ export const HEADER_HEIGHT = 35;
 
 // gauge chart default parameters
 export interface DefaultGaugeChartParametersProps {
-  GaugeTitleSize: number,
-  DisplayDefaultGauges: number,
-  OrientationDefault: string,
-  TickLength: number, 
-  LegendPlacement: string,
-  ThresholdsMaxLimit: number
-};
+  GaugeTitleSize: number;
+  DisplayDefaultGauges: number;
+  OrientationDefault: string;
+  TickLength: number;
+  LegendPlacement: string;
+  ThresholdsMaxLimit: number;
+}
 
 export const DefaultGaugeChartParameters: DefaultGaugeChartParametersProps = {
   GaugeTitleSize: 14,
@@ -150,5 +159,28 @@ export const DefaultGaugeChartParameters: DefaultGaugeChartParametersProps = {
   OrientationDefault: 'h',
   TickLength: 5,
   LegendPlacement: 'center',
-  ThresholdsMaxLimit: 1
+  ThresholdsMaxLimit: 1,
+};
+
+export interface DefaultBarChartStylesProps {
+  BarMode: string;
+  GroupWidth: number;
+  BarWidth: number;
+  LineWidth: number;
 }
+
+export const DefaultBarChartStyles: DefaultBarChartStylesProps = {
+  BarMode: 'group',
+  GroupWidth: 0.7,
+  BarWidth: 0.97,
+  LineWidth: 1,
+};
+
+export const ChartsMinMaxLimits = {
+  LINE_WIDTH_MIN: 1,
+  LINE_WIDTH_MAX: 10,
+  LABEL_ANGLE_MIN: -90,
+  LABEL_ANGLE_MAX: 90,
+  OPACITY_MIN: 0,
+  OPACITY_MAX: 100,
+};

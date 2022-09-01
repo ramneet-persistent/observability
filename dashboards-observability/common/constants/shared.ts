@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { IField } from '../../common/types/explorer';
 import CSS from 'csstype';
+import { IField } from '../../common/types/explorer';
 
 // Client route
 export const PPL_BASE = '/api/ppl';
@@ -112,7 +112,7 @@ export const ENABLED_VIS_TYPES = [
   visChartTypes.LogsView,
 ];
 
-//Live tail constants
+// Live tail constants
 export const LIVE_OPTIONS = [
   {
     label: '5s',
@@ -189,3 +189,6 @@ export const DefaultChartStyles: DefaultChartStylesProps = {
 };
 
 export const FILLOPACITY_DIV_FACTOR = 200;
+export const SLIDER_MIN_VALUE = 0;
+export const SLIDER_MAX_VALUE = 100;
+export const SLIDER_DEFAULT_STEP = 1;

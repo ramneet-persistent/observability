@@ -8,21 +8,36 @@ import { getPlotlySharedConfigs, getPlotlyCategory } from '../shared/shared_conf
 import { LensIconChartBar } from '../../assets/chart_bar';
 import { VizDataPanel } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/default_vis_editor';
 import { ConfigEditor } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/json_editor';
-import { ConfigAvailability } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_availability';
-import { ButtonGroupItem } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_button_group';
-import { ConfigBarChartStyles } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_bar_chart_styles';
-import { SliderConfig } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_style_slider';
 import {
   ConfigLegend,
   InputFieldItem,
+  ConfigColorTheme,
+  SliderConfig,
+  ConfigBarChartStyles,
+  ButtonGroupItem,
+  ConfigAvailability,
 } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls';
 import { DefaultChartStyles } from '../../../../../common/constants/shared';
+import {
+  DefaultBarChartStyles,
+  ChartsMinMaxLimits,
+} from '../../../../../common/constants/explorer';
 import { fetchConfigObject } from '../../../../components/event_analytics/utils/utils';
-import { ConfigColorTheme } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_color_theme';
+
 const sharedConfigs = getPlotlySharedConfigs();
 const VIS_CATEGORY = getPlotlyCategory();
 
-const { LegendPosition, ShowLegend } = DefaultChartStyles;
+const { LegendPosition, ShowLegend, LabelAngle, FillOpacity } = DefaultChartStyles;
+const { BarMode, GroupWidth, BarWidth, LineWidth } = DefaultBarChartStyles;
+const {
+  LINE_WIDTH_MAX,
+  LINE_WIDTH_MIN,
+  LABEL_ANGLE_MIN,
+  LABEL_ANGLE_MAX,
+  OPACITY_MIN,
+  OPACITY_MAX,
+} = ChartsMinMaxLimits;
+
 export const createBarTypeDefinition = (params: any) => ({
   name: 'bar',
   type: 'bar',
@@ -38,12 +53,12 @@ export const createBarTypeDefinition = (params: any) => ({
   categoryaxis: 'xaxis',
   seriesaxis: 'yaxis',
   orientation: 'v',
-  mode: 'group',
-  labelangle: 0,
-  linewidth: 1,
-  fillOpacity: 80,
-  groupwidth: 0.7,
-  barwidth: 0.97,
+  mode: BarMode,
+  labelangle: LabelAngle,
+  linewidth: LineWidth,
+  fillopacity: FillOpacity,
+  groupwidth: GroupWidth,
+  barwidth: BarWidth,
   showlegend: ShowLegend,
   legendposition: LegendPosition,
   component: Bar,
@@ -136,9 +151,9 @@ export const createBarTypeDefinition = (params: any) => ({
               {
                 name: 'Rotate bar labels',
                 component: SliderConfig,
-                mapTo: 'rotateBarLabels',
+                mapTo: 'labelAngle',
                 eleType: 'slider',
-                defaultState: 0,
+                defaultState: LabelAngle,
                 props: {
                   ticks: [
                     { label: '-90°', value: -90 },
@@ -148,15 +163,15 @@ export const createBarTypeDefinition = (params: any) => ({
                     { label: '90°', value: 90 },
                   ],
                   showTicks: true,
-                  min: -90,
-                  max: 90,
+                  min: LABEL_ANGLE_MIN,
+                  max: LABEL_ANGLE_MAX,
                 },
               },
               {
                 name: 'Group width',
                 component: SliderConfig,
                 mapTo: 'groupWidth',
-                defaultState: 0.7,
+                defaultState: GroupWidth,
                 props: {
                   max: 1,
                   step: 0.01,
@@ -167,7 +182,7 @@ export const createBarTypeDefinition = (params: any) => ({
                 name: 'Bar width',
                 component: SliderConfig,
                 mapTo: 'barWidth',
-                defaultState: 0.97,
+                defaultState: BarWidth,
                 props: {
                   max: 1,
                   step: 0.01,
@@ -178,9 +193,10 @@ export const createBarTypeDefinition = (params: any) => ({
                 name: 'Line width',
                 component: SliderConfig,
                 mapTo: 'lineWidth',
-                defaultState: 1,
+                defaultState: LineWidth,
                 props: {
-                  max: 10,
+                  max: LINE_WIDTH_MAX,
+                  min: LINE_WIDTH_MIN,
                 },
                 eleType: 'slider',
               },
@@ -188,9 +204,10 @@ export const createBarTypeDefinition = (params: any) => ({
                 name: 'Fill opacity',
                 component: SliderConfig,
                 mapTo: 'fillOpacity',
-                defaultState: 80,
+                defaultState: FillOpacity,
                 props: {
-                  max: 100,
+                  max: OPACITY_MAX,
+                  min: OPACITY_MIN,
                 },
                 eleType: 'slider',
               },

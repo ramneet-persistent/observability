@@ -16,6 +16,15 @@ import {
 } from '../../../../../common/constants/shared';
 import { hexToRgb } from '../../../../components/event_analytics/utils/utils';
 import { EmptyPlaceholder } from '../../../event_analytics/explorer/visualizations/shared_components/empty_placeholder';
+import { ChartsMinMaxLimits } from '../../../../../common/constants/explorer';
+const {
+  LINE_WIDTH_MAX,
+  LINE_WIDTH_MIN,
+  LABEL_ANGLE_MIN,
+  LABEL_ANGLE_MAX,
+  OPACITY_MIN,
+  OPACITY_MAX,
+} = ChartsMinMaxLimits;
 
 export const Line = ({ visualizations, layout, config }: any) => {
   const {
@@ -57,7 +66,7 @@ export const Line = ({ visualizations, layout, config }: any) => {
 
   const lastIndex = fields.length - 1;
 
-  let visType: string = visualizations.vis.name;
+  const visType: string = visualizations.vis.name;
   const mode =
     dataConfig?.chartStyles?.style ||
     (visType === visChartTypes.Line ? DefaultModeLine : DefaultModeScatter);
@@ -154,7 +163,7 @@ export const Line = ({ visualizations, layout, config }: any) => {
       };
     });
 
-    let layoutForBarMode = {
+    const layoutForBarMode = {
       barmode: 'group',
     };
     const mergedLayout = {

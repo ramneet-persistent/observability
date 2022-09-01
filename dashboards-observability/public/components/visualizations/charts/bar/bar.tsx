@@ -11,7 +11,17 @@ import { AvailabilityUnitType } from '../../../event_analytics/explorer/visualiz
 import { ThresholdUnitType } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_thresholds';
 import { hexToRgb } from '../../../event_analytics/utils/utils';
 import { EmptyPlaceholder } from '../../../event_analytics/explorer/visualizations/shared_components/empty_placeholder';
+import { getConfigChartStyleParameter } from '../helpers';
 import { FILLOPACITY_DIV_FACTOR } from '../../../../../common/constants/shared';
+import { ChartsMinMaxLimits } from '../../../../../common/constants/explorer';
+const {
+  LINE_WIDTH_MAX,
+  LINE_WIDTH_MIN,
+  LABEL_ANGLE_MIN,
+  LABEL_ANGLE_MAX,
+  OPACITY_MIN,
+  OPACITY_MAX,
+} = ChartsMinMaxLimits;
 
 export const Bar = ({ visualizations, layout, config }: any) => {
   const DEFAULT_LABEL_SIZE = 10;
@@ -22,30 +32,29 @@ export const Bar = ({ visualizations, layout, config }: any) => {
   } = visualizations.data.rawVizData;
   const lastIndex = fields.length - 1;
   const {
-    dataConfig = {},
+    dataConfig: {
+      chartStyles = {},
+      valueOptions = {},
+      legend = {},
+      colorTheme = [],
+      panelOptions = {},
+      tooltipOptions = {},
+    },
     layoutConfig = {},
     availabilityConfig = {},
   } = visualizations?.data?.userConfigs;
-  const dataConfigTab =
-    visualizations.data?.rawVizData?.bar?.dataConfig &&
-    visualizations.data.rawVizData.bar.dataConfig;
-  const xaxis = dataConfig?.valueOptions?.dimensions
-    ? dataConfig.valueOptions.dimensions.filter((item) => item.label)
-    : [];
-  const yaxis = dataConfig?.valueOptions?.metrics
-    ? dataConfig.valueOptions.metrics.filter((item) => item.label)
-    : [];
-  const barOrientation = dataConfig?.chartStyles?.orientation || vis.orientation;
+
+  const xaxis = valueOptions.dimensions ? valueOptions.dimensions.filter((item) => item.label) : [];
+  const yaxis = valueOptions?.metrics ? valueOptions.metrics.filter((item) => item.label) : [];
+  const barOrientation = chartStyles?.orientation || vis.orientation;
   const isVertical = barOrientation === vis.orientation;
   const tooltipMode =
-    dataConfig?.tooltipOptions?.tooltipMode !== undefined
-      ? dataConfig.tooltipOptions.tooltipMode
-      : 'show';
+    tooltipOptions?.tooltipMode !== undefined ? tooltipOptions.tooltipMode : 'show';
   const tooltipText =
-    dataConfig?.tooltipOptions?.tooltipText !== undefined
-      ? dataConfig.tooltipOptions.tooltipText
-      : 'all';
-  let bars, valueSeries, valueForXSeries;
+    tooltipOptions?.tooltipText !== undefined ? tooltipOptions.tooltipText : 'all';
+  let bars;
+  let valueSeries;
+  let valueForXSeries;
 
   if (!isEmpty(xaxis) && !isEmpty(yaxis)) {
     valueSeries = isVertical ? [...yaxis] : [...xaxis];
@@ -54,27 +63,36 @@ export const Bar = ({ visualizations, layout, config }: any) => {
     return <EmptyPlaceholder icon={visualizations?.vis?.icontype} />;
   }
 
-  const tickAngle = dataConfig?.chartStyles?.rotateBarLabels || vis.labelangle;
-  const lineWidth = dataConfig?.chartStyles?.lineWidth || vis.linewidth;
-  const fillOpacity =
-    dataConfig?.chartStyles?.fillOpacity !== undefined
-      ? dataConfig?.chartStyles?.fillOpacity / FILLOPACITY_DIV_FACTOR
-      : vis.fillOpacity / FILLOPACITY_DIV_FACTOR;
-  const barWidth = 1 - (dataConfig?.chartStyles?.barWidth || vis.barwidth);
-  const groupWidth = 1 - (dataConfig?.chartStyles?.groupWidth || vis.groupwidth);
-  const showLegend = !(
-    dataConfig?.legend?.showLegend && dataConfig.legend.showLegend !== vis.showlegend
-  );
-  const legendPosition = dataConfig?.legend?.position || vis.legendposition;
-  visualizations.data?.rawVizData?.dataConfig?.metrics
-    ? visualizations.data?.rawVizData?.dataConfig?.metrics
-    : [];
-  const labelSize = dataConfig?.chartStyles?.labelSize || DEFAULT_LABEL_SIZE;
-
+  const tickAngle = getConfigChartStyleParameter({
+    parameter: 'labelAngle',
+    min: LABEL_ANGLE_MIN,
+    max: LABEL_ANGLE_MAX,
+    chartStyles,
+    vis,
+  });
+  const lineWidth = getConfigChartStyleParameter({
+    parameter: 'lineWidth',
+    min: LINE_WIDTH_MIN,
+    max: LINE_WIDTH_MAX,
+    chartStyles,
+    vis,
+  });
+  const selectedOpacity = getConfigChartStyleParameter({
+    parameter: 'fillOpacity',
+    min: OPACITY_MIN,
+    max: OPACITY_MAX,
+    chartStyles,
+    vis,
+  });
+  const fillOpacity = selectedOpacity / FILLOPACITY_DIV_FACTOR;
+  const barWidth = 1 - (chartStyles.barWidth || vis.barwidth);
+  const groupWidth = 1 - (chartStyles.groupWidth || vis.groupwidth);
+  const showLegend = !(legend.showLegend && legend.showLegend !== vis.showlegend);
+  const legendPosition = legend.position || vis.legendposition;
+  const labelSize = chartStyles.labelSize || DEFAULT_LABEL_SIZE;
   const getSelectedColorTheme = (field: any, index: number) =>
-    (dataConfig?.colorTheme?.length > 0 &&
-      dataConfig.colorTheme.find((colorSelected) => colorSelected.name.name === field.label)
-        ?.color) ||
+    (colorTheme?.length > 0 &&
+      colorTheme.find((colorSelected) => colorSelected.name.name === field.label)?.color) ||
     PLOTLY_COLOR[index % PLOTLY_COLOR.length];
 
   const prepareData = (valueForXSeries) => {
@@ -100,7 +118,7 @@ export const Bar = ({ visualizations, layout, config }: any) => {
             })
         : [];
 
-    let dimensionsData = valueForXSeries
+    const dimensionsData = valueForXSeries
       .filter((item) => item.type === 'timestamp')
       .map((dimension) => data[dimension.label])
       .flat();
@@ -178,8 +196,8 @@ export const Bar = ({ visualizations, layout, config }: any) => {
     colorway: plotlyColorway,
     ...layout,
     ...(layoutConfig.layout && layoutConfig.layout),
-    title: dataConfig?.panelOptions?.title || layoutConfig.layout?.title || '',
-    barmode: dataConfig?.chartStyles?.mode || visualizations.vis.mode,
+    title: panelOptions?.title || layoutConfig.layout?.title || '',
+    barmode: chartStyles?.mode || visualizations.vis.mode,
     font: {
       size: labelSize,
     },
@@ -195,14 +213,14 @@ export const Bar = ({ visualizations, layout, config }: any) => {
     },
     showlegend: showLegend,
   };
-  if (dataConfig.thresholds || availabilityConfig.level) {
+  if (availabilityConfig.level) {
     const thresholdTraces = {
       x: [],
       y: [],
       mode: 'text',
       text: [],
     };
-    const thresholds = dataConfig.thresholds ? dataConfig.thresholds : [];
+
     const levels = availabilityConfig.level ? availabilityConfig.level : [];
 
     const mapToLine = (list: ThresholdUnitType[] | AvailabilityUnitType[], lineStyle: any) => {
@@ -229,7 +247,7 @@ export const Bar = ({ visualizations, layout, config }: any) => {
       });
     };
 
-    mergedLayout.shapes = [...mapToLine(thresholds, { dash: 'dashdot' }), ...mapToLine(levels, {})];
+    mergedLayout.shapes = mapToLine(levels, {});
     bars = [...bars, thresholdTraces];
   }
   const mergedConfigs = useMemo(

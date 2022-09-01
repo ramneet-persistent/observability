@@ -274,3 +274,11 @@ export interface ConfigList {
   dimensions?: ConfigListEntry[] | HistogramConfigList[];
   metrics?: ConfigListEntry[];
 }
+
+export interface GetConfigChartStyleParameterType {
+  min: number;
+  max: number;
+  parameter: string;
+  chartStyles: any;
+  vis: any;
+}

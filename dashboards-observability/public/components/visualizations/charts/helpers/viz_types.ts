@@ -10,6 +10,7 @@ import {
   IField,
   IQuery,
   ExplorerData,
+  GetConfigChartStyleParameterType,
 } from '../../../../../common/types/explorer';
 import { visChartTypes } from '../../../../../common/constants/shared';
 
@@ -40,12 +41,12 @@ const initialEntryTreemap = { label: '', name: '' };
 
 const getDefaultXYAxisLabels = (vizFields: IField[], visName: string) => {
   if (isEmpty(vizFields)) return {};
-  const vizFieldsWithLabel: { [key: string]: string }[] = vizFields.map((vizField) => ({
+  const vizFieldsWithLabel: Array<{ [key: string]: string }> = vizFields.map((vizField) => ({
     ...vizField,
     label: vizField.name,
   }));
 
-  const mapXaxis = (): { [key: string]: string }[] => {
+  const mapXaxis = (): Array<{ [key: string]: string }> => {
     const xaxis = vizFieldsWithLabel.filter((field) => field.type === 'timestamp');
     return visName === visChartTypes.Line
       ? xaxis.length === 0
@@ -54,7 +55,7 @@ const getDefaultXYAxisLabels = (vizFields: IField[], visName: string) => {
       : [vizFieldsWithLabel[vizFieldsWithLabel.length - 1]];
   };
 
-  const mapYaxis = (): { [key: string]: string }[] =>
+  const mapYaxis = (): Array<{ [key: string]: string }> =>
     visName === visChartTypes.Line
       ? vizFieldsWithLabel.filter((field) => field.type !== 'timestamp')
       : take(
@@ -175,4 +176,21 @@ export const getVizContainerProps = ({
       ...getVisTypeData(),
     },
   };
+};
+
+export const getConfigChartStyleParameter = ({
+  parameter,
+  min,
+  max,
+  chartStyles,
+  vis,
+}: GetConfigChartStyleParameterType) => {
+  if (
+    chartStyles[parameter] !== undefined &&
+    (chartStyles[parameter] >= min || chartStyles[parameter] <= max)
+  ) {
+    return chartStyles[parameter];
+  } else {
+    return vis[parameter.toLowerCase()];
+  }
 };

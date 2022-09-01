@@ -24,6 +24,8 @@ import {
 import { ButtonGroupItem } from '../../../../../public/components/event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_button_group';
 import { SliderConfig } from '../../../../../public/components/event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_style_slider';
 import { fetchConfigObject } from '../../../../components/event_analytics/utils/utils';
+import { ChartsMinMaxLimits } from '../../../../../common/constants/explorer';
+
 const sharedConfigs = getPlotlySharedConfigs();
 const VIS_CATEGORY = getPlotlyCategory();
 const {
@@ -37,6 +39,14 @@ const {
   ShowLegend,
   LabelAngle,
 } = DefaultChartStyles;
+const {
+  LINE_WIDTH_MAX,
+  LINE_WIDTH_MIN,
+  LABEL_ANGLE_MIN,
+  LABEL_ANGLE_MAX,
+  OPACITY_MIN,
+  OPACITY_MAX,
+} = ChartsMinMaxLimits;
 
 export const createLineTypeDefinition = (params: any = {}) => ({
   name: params.type,
@@ -153,7 +163,8 @@ export const createLineTypeDefinition = (params: any = {}) => ({
                 defaultState: LineWidth,
                 eleType: 'slider',
                 props: {
-                  max: 10,
+                  min: LINE_WIDTH_MIN,
+                  max: LINE_WIDTH_MAX,
                 },
               },
               {
@@ -163,7 +174,8 @@ export const createLineTypeDefinition = (params: any = {}) => ({
                 defaultState: FillOpacity,
                 eleType: 'slider',
                 props: {
-                  max: 100,
+                  max: OPACITY_MAX,
+                  min: OPACITY_MIN,
                 },
               },
               {
@@ -198,8 +210,8 @@ export const createLineTypeDefinition = (params: any = {}) => ({
                     { label: '90°', value: 90 },
                   ],
                   showTicks: true,
-                  min: -90,
-                  max: 90,
+                  min: LABEL_ANGLE_MIN,
+                  max: LABEL_ANGLE_MAX,
                 },
               },
             ],
