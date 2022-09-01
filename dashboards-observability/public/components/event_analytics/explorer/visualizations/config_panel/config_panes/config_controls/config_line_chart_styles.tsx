@@ -5,9 +5,15 @@
 
 import React, { useMemo, useCallback, Fragment } from 'react';
 import { EuiAccordion, EuiSpacer } from '@elastic/eui';
+import { get } from 'lodash';
 import { ButtonGroupItem } from './config_button_group';
 import { IConfigPanelOptionSection } from '../../../../../../../../common/types/explorer';
-import { visChartTypes } from '../../../../../../../../common/constants/shared';
+import {
+  visChartTypes,
+  SLIDER_MIN_VALUE,
+  SLIDER_MAX_VALUE,
+  SLIDER_DEFAULT_STEP,
+} from '../../../../../../../../common/constants/shared';
 
 export const ConfigLineChartStyles = ({
   visualizations,
@@ -87,9 +93,15 @@ export const ConfigLineChartStyles = ({
         } else if (schema.eleType === 'slider') {
           params = {
             ...params,
-            minRange: schema?.props?.min || 0,
-            maxRange: schema?.props?.max || 100,
-            step: schema?.props?.step || 1,
+            minRange:
+              typeof get(schema, 'props.min') === undefined
+                ? SLIDER_MIN_VALUE
+                : get(schema, 'props.min'),
+            maxRange:
+              typeof get(schema, 'props.max') === undefined
+                ? SLIDER_MAX_VALUE
+                : get(schema, 'props.max'),
+            step: schema?.props?.step || SLIDER_DEFAULT_STEP,
             currentRange: vizState[schema.mapTo] || schema?.defaultState,
             ticks: schema?.props?.ticks,
             showTicks: schema?.props?.showTicks || false,
@@ -104,7 +116,7 @@ export const ConfigLineChartStyles = ({
         }
         return (
           <Fragment key={`viz-series-${index}`}>
-            <DimensionComponent  {...params} />
+            <DimensionComponent {...params} />
             <EuiSpacer size="s" />
           </Fragment>
         );

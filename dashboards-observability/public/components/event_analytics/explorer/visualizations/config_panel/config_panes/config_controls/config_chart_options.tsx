@@ -5,8 +5,14 @@
 
 import React, { useMemo, useCallback, Fragment } from 'react';
 import { EuiAccordion, EuiSpacer, EuiForm } from '@elastic/eui';
+import { get } from 'lodash';
 import { PanelItem } from './config_panel_item';
 import { SPECTRUM, OPACITY } from '../../../../../../../../common/constants/colors';
+import {
+  SLIDER_MIN_VALUE,
+  SLIDER_MAX_VALUE,
+  SLIDER_DEFAULT_STEP,
+} from '../../../../../../../../common/constants/shared';
 
 export const ConfigChartOptions = ({
   visualizations,
@@ -90,7 +96,15 @@ export const ConfigChartOptions = ({
         } else if (schema.eleType === 'slider') {
           params = {
             ...params,
-            maxRange: schema.props.max,
+            minRange:
+              typeof get(schema, 'props.min') === undefined
+                ? SLIDER_MIN_VALUE
+                : get(schema, 'props.min'),
+            maxRange:
+              typeof get(schema, 'props.max') === undefined
+                ? SLIDER_MAX_VALUE
+                : get(schema, 'props.max'),
+            step: schema?.props?.step || SLIDER_DEFAULT_STEP,
             currentRange: vizState[schema.mapTo] || schema?.defaultState,
             handleSliderChange: handleConfigurationChange(schema.mapTo),
           };
@@ -130,7 +144,7 @@ export const ConfigChartOptions = ({
         return (
           <Fragment key={`viz-series-${index}`}>
             <EuiForm component="form">
-              <DimensionComponent  {...params} />
+              <DimensionComponent {...params} />
               <EuiSpacer size="s" />
             </EuiForm>
           </Fragment>

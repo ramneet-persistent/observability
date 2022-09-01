@@ -175,12 +175,3 @@ export const DefaultBarChartStyles: DefaultBarChartStylesProps = {
   BarWidth: 0.97,
   LineWidth: 1,
 };
-
-export const ChartsMinMaxLimits = {
-  LINE_WIDTH_MIN: 1,
-  LINE_WIDTH_MAX: 10,
-  LABEL_ANGLE_MIN: -90,
-  LABEL_ANGLE_MAX: 90,
-  OPACITY_MIN: 0,
-  OPACITY_MAX: 100,
-};

@@ -275,6 +275,11 @@ export interface ConfigList {
   metrics?: ConfigListEntry[];
 }
 
+export interface GetTooltipHoverInfoType {
+  tooltipMode: string;
+  tooltipText: string;
+}
+
 export interface GetConfigChartStyleParameterType {
   min: number;
   max: number;

@@ -5,6 +5,7 @@
 
 import React, { useMemo, useCallback, Fragment } from 'react';
 import { EuiAccordion, EuiSpacer } from '@elastic/eui';
+import { get } from 'lodash';
 import { ButtonGroupItem } from './config_button_group';
 import { IConfigPanelOptionSection } from '../../../../../../../../common/types/explorer';
 import {
@@ -90,8 +91,14 @@ export const ConfigBarChartStyles = ({
           if (schema.eleType === 'slider') {
             params = {
               ...params,
-              minRange: schema?.props?.min || SLIDER_MIN_VALUE,
-              maxRange: schema?.props?.max || SLIDER_MAX_VALUE,
+              minRange:
+                typeof get(schema, 'props.min') === undefined
+                  ? SLIDER_MIN_VALUE
+                  : get(schema, 'props.min'),
+              maxRange:
+                typeof get(schema, 'props.max') === undefined
+                  ? SLIDER_MAX_VALUE
+                  : get(schema, 'props.max'),
               step: schema?.props?.step || SLIDER_DEFAULT_STEP,
               currentRange: vizState[schema.mapTo] || schema?.defaultState,
               ticks: schema?.props?.ticks,

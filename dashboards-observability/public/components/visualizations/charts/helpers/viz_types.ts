@@ -187,7 +187,8 @@ export const getConfigChartStyleParameter = ({
 }: GetConfigChartStyleParameterType) => {
   if (
     chartStyles[parameter] !== undefined &&
-    (chartStyles[parameter] >= min || chartStyles[parameter] <= max)
+    Number(chartStyles[parameter]) >= min &&
+    Number(chartStyles[parameter] <= max)
   ) {
     return chartStyles[parameter];
   } else {

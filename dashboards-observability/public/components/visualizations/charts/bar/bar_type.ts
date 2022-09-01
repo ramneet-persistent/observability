@@ -17,11 +17,8 @@ import {
   ButtonGroupItem,
   ConfigAvailability,
 } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls';
-import { DefaultChartStyles } from '../../../../../common/constants/shared';
-import {
-  DefaultBarChartStyles,
-  ChartsMinMaxLimits,
-} from '../../../../../common/constants/explorer';
+import { DefaultChartStyles, ChartsMinMaxLimits } from '../../../../../common/constants/shared';
+import { DefaultBarChartStyles } from '../../../../../common/constants/explorer';
 import { fetchConfigObject } from '../../../../components/event_analytics/utils/utils';
 
 const sharedConfigs = getPlotlySharedConfigs();

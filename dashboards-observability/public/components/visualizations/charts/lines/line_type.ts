@@ -20,11 +20,11 @@ import {
   DefaultChartStyles,
   visChartTypes,
   PLOTLY_COLOR,
+  ChartsMinMaxLimits,
 } from '../../../../../common/constants/shared';
 import { ButtonGroupItem } from '../../../../../public/components/event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_button_group';
 import { SliderConfig } from '../../../../../public/components/event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_style_slider';
 import { fetchConfigObject } from '../../../../components/event_analytics/utils/utils';
-import { ChartsMinMaxLimits } from '../../../../../common/constants/explorer';
 
 const sharedConfigs = getPlotlySharedConfigs();
 const VIS_CATEGORY = getPlotlyCategory();
@@ -46,6 +46,8 @@ const {
   LABEL_ANGLE_MAX,
   OPACITY_MIN,
   OPACITY_MAX,
+  MARKER_SIZE_MAX,
+  MARKER_SIZE_MIN,
 } = ChartsMinMaxLimits;
 
 export const createLineTypeDefinition = (params: any = {}) => ({
@@ -56,12 +58,13 @@ export const createLineTypeDefinition = (params: any = {}) => ({
   fulllabel: params.type === visChartTypes.Line ? 'Time series' : 'Scatter',
   icontype: 'visLine',
   category: VIS_CATEGORY.BASICS,
-  selection: {
-    dataLoss: 'nothing',
-  },
   icon: LensIconChartLine,
   categoryaxis: 'xaxis',
   seriesaxis: 'yaxis',
+  linewidth: LineWidth,
+  fillopacity: FillOpacity,
+  labelangle: LabelAngle,
+  markersize: MarkerSize,
   editorconfig: {
     panelTabs: [
       {
@@ -181,11 +184,12 @@ export const createLineTypeDefinition = (params: any = {}) => ({
               {
                 name: 'Point size',
                 component: SliderConfig,
-                mapTo: 'pointSize',
+                mapTo: 'markerSize',
                 defaultState: MarkerSize,
                 eleType: 'slider',
                 props: {
-                  max: 40,
+                  min: MARKER_SIZE_MIN,
+                  max: MARKER_SIZE_MAX,
                 },
               },
               {
@@ -198,7 +202,7 @@ export const createLineTypeDefinition = (params: any = {}) => ({
               {
                 name: 'Rotate labels',
                 component: SliderConfig,
-                mapTo: 'rotateLabels',
+                mapTo: 'labelangle',
                 eleType: 'slider',
                 defaultState: LabelAngle,
                 props: {
@@ -251,32 +255,28 @@ export const createLineTypeDefinition = (params: any = {}) => ({
   visconfig: {
     layout: {
       ...sharedConfigs.layout,
-      ...{
-        colorway: PLOTLY_COLOR,
-        plot_bgcolor: 'rgba(0, 0, 0, 0)',
-        paper_bgcolor: 'rgba(0, 0, 0, 0)',
-        xaxis: {
-          fixedrange: true,
-          showgrid: false,
-          visible: true,
-        },
-        yaxis: {
-          fixedrange: true,
-          showgrid: false,
-          visible: true,
-        },
+      colorway: PLOTLY_COLOR,
+      plot_bgcolor: 'rgba(0, 0, 0, 0)',
+      paper_bgcolor: 'rgba(0, 0, 0, 0)',
+      xaxis: {
+        fixedrange: true,
+        showgrid: false,
+        visible: true,
+      },
+      yaxis: {
+        fixedrange: true,
+        showgrid: false,
+        visible: true,
       },
     },
     config: {
       ...sharedConfigs.config,
-      ...{
-        barmode: params.type,
-        xaxis: {
-          automargin: true,
-        },
-        yaxis: {
-          automargin: true,
-        },
+      barmode: params.type,
+      xaxis: {
+        automargin: true,
+      },
+      yaxis: {
+        automargin: true,
       },
     },
   },

@@ -4,55 +4,74 @@
  */
 
 import React, { useMemo } from 'react';
-import { take, isEmpty, last } from 'lodash';
+import { take, isEmpty } from 'lodash';
 import { Plt } from '../../plotly/plot';
+import { hexToRgb } from '../../../../components/event_analytics/utils/utils';
+import { getConfigChartStyleParameter } from '../helpers';
 import {
   DefaultChartStyles,
   PLOTLY_COLOR,
   FILLOPACITY_DIV_FACTOR,
   visChartTypes,
+  ChartsMinMaxLimits,
 } from '../../../../../common/constants/shared';
-import { hexToRgb } from '../../../../components/event_analytics/utils/utils';
+
+const { LINE_WIDTH_MAX, LINE_WIDTH_MIN, OPACITY_MIN, OPACITY_MAX } = ChartsMinMaxLimits;
 
 export const Histogram = ({ visualizations, layout, config }: any) => {
   const { LineWidth, FillOpacity, LegendPosition, ShowLegend } = DefaultChartStyles;
+  const { vis } = visualizations;
   const {
     data = {},
     metadata: { fields },
   } = visualizations.data.rawVizData;
   const { defaultAxes } = visualizations?.data;
-  const { dataConfig = {}, layoutConfig = {} } = visualizations?.data?.userConfigs;
+  const {
+    dataConfig: {
+      chartStyles = {},
+      valueOptions = {},
+      legend = {},
+      colorTheme = [],
+      panelOptions = {},
+      tooltipOptions = {},
+    },
+    layoutConfig = {},
+  } = visualizations?.data?.userConfigs;
   const lastIndex = fields.length - 1;
-  const lineWidth = dataConfig?.chartStyles?.lineWidth || LineWidth;
-  const showLegend =
-    dataConfig?.legend?.showLegend && dataConfig.legend.showLegend !== ShowLegend ? false : true;
-  const legendPosition = dataConfig?.legend?.position || LegendPosition;
-  const fillOpacity =
-    (dataConfig?.chartStyles?.fillOpacity || FillOpacity) / FILLOPACITY_DIV_FACTOR;
+  const lineWidth = getConfigChartStyleParameter({
+    parameter: 'lineWidth',
+    min: LINE_WIDTH_MIN,
+    max: LINE_WIDTH_MAX,
+    chartStyles,
+    vis,
+  });
+  const showLegend = legend.showLegend && legend.showLegend !== ShowLegend ? false : true;
+  const legendPosition = legend.position || LegendPosition;
+  const selectedOpacity = getConfigChartStyleParameter({
+    parameter: 'fillOpacity',
+    min: OPACITY_MIN,
+    max: OPACITY_MAX,
+    chartStyles,
+    vis,
+  });
+  const fillOpacity = selectedOpacity / FILLOPACITY_DIV_FACTOR;
   const tooltipMode =
-    dataConfig?.tooltipOptions?.tooltipMode !== undefined
-      ? dataConfig.tooltipOptions.tooltipMode
-      : 'show';
-  const tooltipText =
-    dataConfig?.tooltipOptions?.tooltipText !== undefined
-      ? dataConfig.tooltipOptions.tooltipText
-      : 'all';
+    tooltipOptions.tooltipMode !== undefined ? tooltipOptions.tooltipMode : 'show';
+  const tooltipText = tooltipOptions.tooltipText !== undefined ? tooltipOptions.tooltipText : 'all';
   const valueSeries = defaultAxes?.yaxis || take(fields, lastIndex > 0 ? lastIndex : 1);
 
   const xbins: any = {};
-  if (dataConfig?.valueOptions?.dimensions[0].bucketSize) {
-    xbins.size = dataConfig.valueOptions.dimensions[0].bucketSize;
+  if (valueOptions.dimensions[0].bucketSize) {
+    xbins.size = valueOptions.dimensions[0].bucketSize;
   }
-  if (dataConfig?.valueOptions?.dimensions[0].bucketOffset) {
-    xbins.start = dataConfig.valueOptions.dimensions[0].bucketOffset;
+  if (valueOptions.dimensions[0].bucketOffset) {
+    xbins.start = valueOptions.dimensions[0].bucketOffset;
   }
 
   const selectedColorTheme = (field: any, index: number, opacity?: number) => {
     let newColor;
-    if (dataConfig?.colorTheme && dataConfig?.colorTheme.length !== 0) {
-      newColor = dataConfig.colorTheme.find(
-        (colorSelected) => colorSelected.name.name === field.name
-      );
+    if (colorTheme.length !== 0) {
+      newColor = colorTheme.find((colorSelected) => colorSelected.name.name === field.name);
     }
     return hexToRgb(newColor ? newColor.color : PLOTLY_COLOR[index % PLOTLY_COLOR.length], opacity);
   };
@@ -79,7 +98,7 @@ export const Histogram = ({ visualizations, layout, config }: any) => {
   const mergedLayout = {
     ...layout,
     ...(layoutConfig.layout && layoutConfig.layout),
-    title: dataConfig?.panelOptions?.title || layoutConfig.layout?.title || '',
+    title: panelOptions?.title || layoutConfig.layout?.title || '',
     barmode: 'group',
     legend: {
       ...layout.legend,

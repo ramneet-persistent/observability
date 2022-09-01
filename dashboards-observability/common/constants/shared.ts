@@ -192,3 +192,14 @@ export const FILLOPACITY_DIV_FACTOR = 200;
 export const SLIDER_MIN_VALUE = 0;
 export const SLIDER_MAX_VALUE = 100;
 export const SLIDER_DEFAULT_STEP = 1;
+
+export enum ChartsMinMaxLimits {
+  LINE_WIDTH_MIN = 1,
+  LINE_WIDTH_MAX = 10,
+  LABEL_ANGLE_MIN = -90,
+  LABEL_ANGLE_MAX = 90,
+  OPACITY_MIN = 0,
+  OPACITY_MAX = 100,
+  MARKER_SIZE_MAX = 10,
+  MARKER_SIZE_MIN = 0,
+}

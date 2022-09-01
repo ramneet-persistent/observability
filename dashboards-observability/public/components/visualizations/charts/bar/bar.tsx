@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { isEmpty, last, take } from 'lodash';
+import { isEmpty, last } from 'lodash';
 import { Plt } from '../../plotly/plot';
 import { LONG_CHART_COLOR, PLOTLY_COLOR } from '../../../../../common/constants/shared';
 import { AvailabilityUnitType } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_availability';
@@ -12,8 +12,7 @@ import { ThresholdUnitType } from '../../../event_analytics/explorer/visualizati
 import { hexToRgb } from '../../../event_analytics/utils/utils';
 import { EmptyPlaceholder } from '../../../event_analytics/explorer/visualizations/shared_components/empty_placeholder';
 import { getConfigChartStyleParameter } from '../helpers';
-import { FILLOPACITY_DIV_FACTOR } from '../../../../../common/constants/shared';
-import { ChartsMinMaxLimits } from '../../../../../common/constants/explorer';
+import { FILLOPACITY_DIV_FACTOR, ChartsMinMaxLimits } from '../../../../../common/constants/shared';
 const {
   LINE_WIDTH_MAX,
   LINE_WIDTH_MIN,
@@ -45,8 +44,8 @@ export const Bar = ({ visualizations, layout, config }: any) => {
   } = visualizations?.data?.userConfigs;
 
   const xaxis = valueOptions.dimensions ? valueOptions.dimensions.filter((item) => item.label) : [];
-  const yaxis = valueOptions?.metrics ? valueOptions.metrics.filter((item) => item.label) : [];
-  const barOrientation = chartStyles?.orientation || vis.orientation;
+  const yaxis = valueOptions.metrics ? valueOptions.metrics.filter((item) => item.label) : [];
+  const barOrientation = chartStyles.orientation || vis.orientation;
   const isVertical = barOrientation === vis.orientation;
   const tooltipMode =
     tooltipOptions?.tooltipMode !== undefined ? tooltipOptions.tooltipMode : 'show';
@@ -196,8 +195,8 @@ export const Bar = ({ visualizations, layout, config }: any) => {
     colorway: plotlyColorway,
     ...layout,
     ...(layoutConfig.layout && layoutConfig.layout),
-    title: panelOptions?.title || layoutConfig.layout?.title || '',
-    barmode: chartStyles?.mode || visualizations.vis.mode,
+    title: panelOptions.title || layoutConfig.layout?.title || '',
+    barmode: chartStyles.mode || visualizations.vis.mode,
     font: {
       size: labelSize,
     },
