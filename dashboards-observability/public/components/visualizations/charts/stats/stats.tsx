@@ -5,15 +5,16 @@
 
 import React, { useMemo } from 'react';
 import Plotly from 'plotly.js-dist';
+import { uniqBy } from 'lodash';
 import { Plt } from '../../plotly/plot';
 import { ThresholdUnitType } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_thresholds';
 import { EmptyPlaceholder } from '../../../event_analytics/explorer/visualizations/shared_components/empty_placeholder';
-import { uniqBy } from 'lodash';
 import { ConfigListEntry } from '../../../../../common/types/explorer';
 import {
   hexToRgb,
   filterDataConfigParameter,
   getRoundOf,
+  getTooltipHoverInfo,
 } from '../../../event_analytics/utils/utils';
 import { uiSettingsService } from '../../../../../common/utils';
 import {
@@ -38,7 +39,7 @@ const {
   DefaultTextColor,
 } = DefaultStatsParameters;
 
-interface createAnnotationType {
+interface CreateAnnotationType {
   index: number;
   label: string;
   value: number | string;
@@ -53,58 +54,63 @@ export const Stats = ({ visualizations, layout, config }: any) => {
   } = visualizations?.data?.rawVizData;
 
   // data config parametrs
-  const { dataConfig = {}, layoutConfig = {} } = visualizations?.data?.userConfigs;
-  const dimensions = dataConfig?.valueOptions?.dimensions
-    ? filterDataConfigParameter(dataConfig.valueOptions.dimensions)
+  const {
+    dataConfig: {
+      chartStyles = {},
+      valueOptions = {},
+      panelOptions = {},
+      tooltipOptions = {},
+      thresholds = [],
+    },
+    layoutConfig = {},
+  } = visualizations?.data?.userConfigs;
+  const dimensions = valueOptions?.dimensions
+    ? filterDataConfigParameter(valueOptions.dimensions)
     : [];
-  const metrics = dataConfig?.valueOptions?.metrics
-    ? filterDataConfigParameter(dataConfig.valueOptions.metrics)
-    : [];
+  const metrics = valueOptions?.metrics ? filterDataConfigParameter(valueOptions.metrics) : [];
   const metricsLength = metrics.length;
-  const chartType = dataConfig?.chartStyles?.chartType || vis.charttype;
+  const chartType = chartStyles.chartType || vis.charttype;
 
   if ((chartType === DefaultChartType && dimensions.length === 0) || metricsLength === 0)
     return <EmptyPlaceholder icon={visualizations?.vis?.icontype} />;
 
-  // style panel parameters
-  const thresholds = Array.isArray(dataConfig?.thresholds)
-    ? dataConfig?.thresholds
-    : [BaseThreshold];
+  // thresholds
+  const appliedThresholds = thresholds.length ? thresholds : [BaseThreshold];
   const sortedThresholds = uniqBy(
-    thresholds.slice().sort((a: ThresholdUnitType, b: ThresholdUnitType) => a.value - b.value),
+    [...appliedThresholds].sort((a: ThresholdUnitType, b: ThresholdUnitType) => a.value - b.value),
     'value'
   );
+  // style panel parameters
   let titleSize =
-    dataConfig?.chartStyles?.titleSize ||
+    chartStyles.titleSize ||
     vis.titlesize - vis.titlesize * metricsLength * STATS_REDUCE_TITLE_SIZE_PERCENTAGE;
   const valueSize =
-    dataConfig?.chartStyles?.valueSize ||
+    chartStyles.valueSize ||
     vis.valuesize - vis.valuesize * metricsLength * STATS_REDUCE_VALUE_SIZE_PERCENTAGE;
-  const selectedOrientation = dataConfig?.chartStyles?.orientation || vis.orientation;
+  const selectedOrientation = chartStyles.orientation || vis.orientation;
   const orientation =
     selectedOrientation === DefaultOrientation || selectedOrientation === 'v'
       ? DefaultOrientation
       : 'h';
-  const selectedTextMode = dataConfig?.chartStyles?.textMode || vis.textmode;
+  const selectedTextMode = chartStyles.textMode || vis.textmode;
   let textMode =
     selectedTextMode === DefaultTextMode || selectedTextMode === 'values+names'
       ? DefaultTextMode
       : selectedTextMode;
-  const precisionValue = dataConfig?.chartStyles?.precisionValue || vis.precisionvalue;
+  const precisionValue = chartStyles.precisionValue || vis.precisionvalue;
   const metricUnits =
-    dataConfig?.chartStyles?.metricUnits?.substring(0, STATS_METRIC_UNIT_SUBSTRING_LENGTH) || '';
+    chartStyles.metricUnits?.substring(0, STATS_METRIC_UNIT_SUBSTRING_LENGTH) || '';
   const metricUnitsSize = valueSize - valueSize * STATS_REDUCE_METRIC_UNIT_SIZE_PERCENTAGE;
   const isDarkMode = uiSettingsService.get('theme:darkMode');
-  const textColor = dataConfig?.chartStyles?.textColor?.childColor || DefaultTextColor;
+  const textColor = chartStyles.textColor?.childColor || DefaultTextColor;
 
-  if (chartType === 'text' && dataConfig?.chartStyles?.textMode === undefined) {
+  if (chartType === 'text' && chartStyles.textMode === undefined) {
     textMode = 'names';
-    titleSize = vis.titlesize
+    titleSize = vis.titlesize;
   }
 
   // margin from left of grid cell for label/value
   const ANNOTATION_MARGIN_LEFT = metricsLength > 1 ? 0.01 : 0;
-
   let chartLayout: object = {
     annotations: [],
     shapes: [],
@@ -122,12 +128,25 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       metricUnits ? `<span style="font-size: ${metricUnitsSize}px"}> ${metricUnits}</span>` : ''
     }</b>`;
 
+  const calculateTextCooridinate = (metricLength: number, index: number) => {
+    if (metricLength === 1) {
+      return 0.5;
+    } else {
+      // calculate center of respective axis in each subplot based on metric length
+      if (index === 0) {
+        return 1 / metricLength / 2;
+      } else {
+        return (index + 1) / metricLength - 1 / metricLength / 2;
+      }
+    }
+  };
+
   const createAnnotationsAutoModeHorizontal = ({
     label,
     value,
     index,
     valueColor,
-  }: createAnnotationType) => {
+  }: CreateAnnotationType) => {
     return textMode === 'values+names' || textMode === DefaultTextMode
       ? [
           {
@@ -165,12 +184,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
           {
             ...STATS_ANNOTATION,
             x: 0.5,
-            y:
-              metricsLength === 1
-                ? 0.5
-                : index === 0
-                ? ((1 / metricsLength) * 1) / 2
-                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+            y: calculateTextCooridinate(metricsLength, index),
             xanchor: 'center',
             yanchor: 'bottom',
             text: textMode === 'values' ? createValueText(value) : label,
@@ -190,7 +204,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
     value,
     index,
     valueColor,
-  }: createAnnotationType) => {
+  }: CreateAnnotationType) => {
     return textMode === 'values+names' || textMode === DefaultTextMode
       ? [
           {
@@ -227,12 +241,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       : [
           {
             ...STATS_ANNOTATION,
-            x:
-              metricsLength === 1
-                ? 0.5
-                : index === 0
-                ? ((1 / metricsLength) * 1) / 2
-                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+            x: calculateTextCooridinate(metricsLength, index),
             xanchor: 'center',
             y: 0.95,
             yanchor: 'bottom',
@@ -251,17 +260,12 @@ export const Stats = ({ visualizations, layout, config }: any) => {
   // extend y axis range to increase height of subplot w.r.t metric data
   const extendYaxisRange = (metric: ConfigListEntry) => {
     const sortedData = data[metric.label].slice().sort((curr: number, next: number) => next - curr);
-    const avgSeriesDiff = sortedData.slice(0, 5).reduce(function (prev, curr, index: number) {
-      if (data[metric.label][index + 1])
-        return (prev += Math.abs(Number((data[metric.label][index + 1] - curr).toFixed(2))));
-      return prev;
-    }, 0);
-    return sortedData[0] + (avgSeriesDiff ? avgSeriesDiff : 100);
+    return isNaN(sortedData[0]) ? 100 : sortedData[0] + sortedData[0] / 2;
   };
 
   const getMetricValue = (label: string) =>
     typeof data[label][data[label].length - 1] === 'number'
-      ? getRoundOf(data[label][data[label].length - 1], precisionValue)
+      ? getRoundOf(data[label][data[label].length - 1], Math.abs(precisionValue))
       : 0;
 
   const generateLineTraces = () => {
@@ -272,6 +276,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
         index: metricIndex,
         valueColor: '',
       };
+      const layoutAxisIndex = metricIndex > 0 ? metricIndex + 1 : '';
       chartLayout = {
         ...chartLayout,
         annotations: chartLayout.annotations.concat(
@@ -279,16 +284,16 @@ export const Stats = ({ visualizations, layout, config }: any) => {
             ? createAnnotationAutoModeVertical(annotationOption)
             : createAnnotationsAutoModeHorizontal(annotationOption)
         ),
-        [`xaxis${metricIndex > 0 ? metricIndex + 1 : ''}`]: {
+        [`xaxis${layoutAxisIndex}`]: {
           visible: false,
           showgrid: false,
-          anchor: `y${metricIndex > 0 ? metricIndex + 1 : ''}`,
+          anchor: `y${layoutAxisIndex}`,
           layoutFor: metric.label,
         },
-        [`yaxis${metricIndex > 0 ? metricIndex + 1 : ''}`]: {
+        [`yaxis${layoutAxisIndex}`]: {
           visible: false,
           showgrid: false,
-          anchor: `x${metricIndex > 0 ? metricIndex + 1 : ''}`,
+          anchor: `x${layoutAxisIndex}`,
           range: [0, extendYaxisRange(metric)],
           layoutFor: metric.label,
         },
@@ -310,6 +315,10 @@ export const Stats = ({ visualizations, layout, config }: any) => {
           xaxis: `x${metricIndex + 1}`,
           yaxis: `y${metricIndex + 1}`,
         }),
+        hoverinfo: getTooltipHoverInfo({
+          tooltipMode: tooltipOptions.tooltipMode,
+          tooltipText: tooltipOptions.tooltipText,
+        }),
       };
     });
   };
@@ -319,7 +328,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
     value,
     index,
     valueColor,
-  }: createAnnotationType) => {
+  }: CreateAnnotationType) => {
     return textMode === DefaultTextMode
       ? [
           {
@@ -362,12 +371,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       : [
           {
             ...STATS_ANNOTATION,
-            x:
-              metricsLength === 1
-                ? 0.5
-                : index === 0
-                ? ((1 / metricsLength) * 1) / 2
-                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+            x: calculateTextCooridinate(metricsLength, index),
             xanchor: 'center',
             y: 0.5,
             yanchor: 'center',
@@ -388,7 +392,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
     value,
     index,
     valueColor,
-  }: createAnnotationType) => {
+  }: CreateAnnotationType) => {
     return textMode === DefaultTextMode
       ? [
           {
@@ -402,12 +406,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
               family: 'Roboto',
             },
             x: 0 + ANNOTATION_MARGIN_LEFT,
-            y:
-              metricsLength === 1
-                ? 0.5
-                : index === 0
-                ? ((1 / metricsLength) * 1) / 2
-                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+            y: calculateTextCooridinate(metricsLength, index),
             metricValue: value,
             type: 'name',
           },
@@ -426,8 +425,8 @@ export const Stats = ({ visualizations, layout, config }: any) => {
               metricsLength === 1
                 ? 0.5
                 : index === 0
-                ? ((1 / metricsLength) * 1) / 2
-                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+                ? 1 / metricsLength / 2
+                : (index + 1) / metricsLength - 1 / metricsLength / 2,
             type: 'value',
             metricValue: value,
           },
@@ -442,8 +441,8 @@ export const Stats = ({ visualizations, layout, config }: any) => {
               metricsLength === 1
                 ? 0.5
                 : index === 0
-                ? ((1 / metricsLength) * 1) / 2
-                : (index + 1) / metricsLength - ((1 / metricsLength) * 1) / 2,
+                ? 1 / metricsLength / 2
+                : (index + 1) / metricsLength - 1 / metricsLength / 2,
             text: textMode === 'values' ? createValueText(value) : label,
             font: {
               size: textMode === 'values' ? valueSize : titleSize,
@@ -544,7 +543,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       const shapes = generateRectShapes();
       chartLayout = {
         ...chartLayout,
-        shapes: shapes,
+        shapes,
       };
       sortedShapesData = shapes
         .map((shape: object, shapeIndex: number) => ({ ...shape, oldIndex: shapeIndex }))
@@ -553,27 +552,24 @@ export const Stats = ({ visualizations, layout, config }: any) => {
 
     if (sortedThresholds.length) {
       // threshold ranges with min, max values
-      const thresholdRanges: Array<Array<number>> = [];
+      let thresholdRanges: number[][] = [];
       const maxValue =
         chartType === DefaultChartType
           ? sortedStatsData[sortedStatsData.length - 1].metricValue
           : sortedShapesData[sortedShapesData.length - 1].metricValue;
-      sortedThresholds.forEach((thresh, index) => {
-        thresholdRanges.push([
-          thresh.value,
-          index === sortedThresholds.length - 1 ? maxValue : sortedThresholds[index + 1].value,
-        ]);
-      });
+      thresholdRanges = sortedThresholds.map((thresh, index) => [
+        thresh.value,
+        index === sortedThresholds.length - 1 ? maxValue : sortedThresholds[index + 1].value,
+      ]);
 
       if (chartType === DefaultChartType) {
         // change color for line traces
         for (let statIndex = 0; statIndex < sortedStatsData.length; statIndex++) {
+          const metricValue = Number(sortedStatsData[statIndex].metricValue);
           for (let threshIndex = 0; threshIndex < thresholdRanges.length; threshIndex++) {
             if (
-              Number(sortedStatsData[statIndex].metricValue) >=
-                Number(thresholdRanges[threshIndex][0]) &&
-              Number(sortedStatsData[statIndex].metricValue) <=
-                Number(thresholdRanges[threshIndex][1])
+              metricValue >= Number(thresholdRanges[threshIndex][0]) &&
+              metricValue <= Number(thresholdRanges[threshIndex][1])
             ) {
               calculatedStatsData[sortedStatsData[statIndex].oldIndex].fillcolor = hexToRgb(
                 sortedThresholds[threshIndex].color,
@@ -590,14 +586,14 @@ export const Stats = ({ visualizations, layout, config }: any) => {
           annotationIndex < chartLayout.annotations.length;
           annotationIndex++
         ) {
+          const isMetricValueText = chartLayout.annotations[annotationIndex].type === 'value';
+          const metricValue = Number(chartLayout.annotations[annotationIndex].metricValue);
           for (let threshIndex = 0; threshIndex < thresholdRanges.length; threshIndex++) {
             if (
               chartType === DefaultChartType &&
-              chartLayout.annotations[annotationIndex].type === 'value' &&
-              Number(chartLayout.annotations[annotationIndex].metricValue) >=
-                Number(thresholdRanges[threshIndex][0]) &&
-              Number(chartLayout.annotations[annotationIndex].metricValue) <=
-                Number(thresholdRanges[threshIndex][1])
+              isMetricValueText &&
+              metricValue >= Number(thresholdRanges[threshIndex][0]) &&
+              metricValue <= Number(thresholdRanges[threshIndex][1])
             ) {
               chartLayout.annotations[annotationIndex].font.color =
                 sortedThresholds[threshIndex].color;
@@ -645,7 +641,7 @@ export const Stats = ({ visualizations, layout, config }: any) => {
       margin:
         chartType === DefaultChartType
           ? STATS_AXIS_MARGIN
-          : dataConfig?.panelOptions?.title || layoutConfig.layout?.title
+          : panelOptions.title || layoutConfig.layout?.title
           ? STATS_AXIS_MARGIN
           : { ...STATS_AXIS_MARGIN, t: 0 },
       ...statsLayout,
@@ -664,13 +660,13 @@ export const Stats = ({ visualizations, layout, config }: any) => {
         pattern: 'independent',
         roworder: 'bottom to top',
       },
-      title: dataConfig?.panelOptions?.title || layoutConfig.layout?.title || '',
+      title: panelOptions.title || layoutConfig.layout?.title || '',
     };
   }, [
     data,
     layout,
     layoutConfig.layout,
-    dataConfig?.panelOptions?.title,
+    panelOptions.title,
     orientation,
     metricsLength,
     statsLayout,
