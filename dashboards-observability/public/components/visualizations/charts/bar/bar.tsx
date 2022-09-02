@@ -48,9 +48,8 @@ export const Bar = ({ visualizations, layout, config }: any) => {
   const barOrientation = chartStyles.orientation || vis.orientation;
   const isVertical = barOrientation === vis.orientation;
   const tooltipMode =
-    tooltipOptions?.tooltipMode !== undefined ? tooltipOptions.tooltipMode : 'show';
-  const tooltipText =
-    tooltipOptions?.tooltipText !== undefined ? tooltipOptions.tooltipText : 'all';
+    tooltipOptions.tooltipMode !== undefined ? tooltipOptions.tooltipMode : 'show';
+  const tooltipText = tooltipOptions.tooltipText !== undefined ? tooltipOptions.tooltipText : 'all';
   let bars;
   let valueSeries;
   let valueForXSeries;
@@ -90,7 +89,7 @@ export const Bar = ({ visualizations, layout, config }: any) => {
   const legendPosition = legend.position || vis.legendposition;
   const labelSize = chartStyles.labelSize || DEFAULT_LABEL_SIZE;
   const getSelectedColorTheme = (field: any, index: number) =>
-    (colorTheme?.length > 0 &&
+    (colorTheme.length > 0 &&
       colorTheme.find((colorSelected) => colorSelected.name.name === field.label)?.color) ||
     PLOTLY_COLOR[index % PLOTLY_COLOR.length];
 

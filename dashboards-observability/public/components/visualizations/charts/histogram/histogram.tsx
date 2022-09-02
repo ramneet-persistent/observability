@@ -98,7 +98,7 @@ export const Histogram = ({ visualizations, layout, config }: any) => {
   const mergedLayout = {
     ...layout,
     ...(layoutConfig.layout && layoutConfig.layout),
-    title: panelOptions?.title || layoutConfig.layout?.title || '',
+    title: panelOptions.title || layoutConfig.layout?.title || '',
     barmode: 'group',
     legend: {
       ...layout.legend,
