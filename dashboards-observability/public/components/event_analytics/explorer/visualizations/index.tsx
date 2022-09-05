@@ -101,17 +101,7 @@ export const ExplorerVisualizations = ({
     onCollapse(optionId);
     collapseFn.current(`panel${optionId}`, optionId === '1' ? 'right' : 'left');
   };
-  // const onToggleCollapsedContainer = (e) => {
-  //   console.log('onToggleCollapsedContainer====e', e);
-  // };
 
-  // const onToggleCollapsedResizablePanel = (e) => {
-  //   console.log('onToggleCollapsedResizablePanel====e', e);
-  // };
-
-  // const onToggleCollapsedInternal = (e) => {
-  //   console.log('onToggleCollapsedInternal====e', e);
-  // };s
   return (
     <EuiResizableContainer onToggleCollapsed={onCollapse} aria-label="aria-label-container">
       {(EuiResizablePanel, EuiResizableButton, { togglePanel }) => {
@@ -123,10 +113,8 @@ export const ExplorerVisualizations = ({
               aria-label="aria-label-1"
               initialSize={17}
               minSize="300"
-              // mode={['collapsible', { position: 'top' }]}
-              mode={['custom', { position: 'top', className: 'panel-toggle' }]}
-              // onToggleCollapsed={onToggleCollapsedResizablePanel}
-              // onToggleCollapsedInternal={onToggleCollapsedInternal}
+              mode={['custom', { position: 'top' }]}
+              className="position-relative"
             >
               <div className="dscFieldChooser">
                 <Sidebar
@@ -147,29 +135,20 @@ export const ExplorerVisualizations = ({
               </div>
               <EuiButtonIcon
                 color="text"
-                aria-label={'Toggle panel 1'}
+                aria-label="Toggle panel 1"
                 iconType="menuLeft"
                 onClick={() => onChange(1)}
+                className="collapse-btn"
               />
             </EuiResizablePanel>
             <EuiResizableButton />
             <EuiResizablePanel
               id="panel2"
               aria-label="aria-label-2"
-              // mode={[
-              //   'collapsible',
-              //   {
-              //     'data-test-subj': 'panel-1-toggle',
-              //     className: 'panel-toggle',
-              //     position: 'top',
-              //   },
-              // ]}
-              mode={['custom', { position: 'top', className: 'panel-toggle' }]}
-              className="containerPanel"
+              mode={['custom', { position: 'top' }]}
+              className="containerPanel position-relative"
               initialSize={14}
               minSize="300"
-              // onToggleCollapsed={onToggleCollapsedResizablePanel}
-              // onToggleCollapsedInternal={onToggleCollapsedInternal}
             >
               <EuiSpacer size="s" />
               <EuiPanel paddingSize="s" className="dataConfigContainer">
@@ -180,11 +159,13 @@ export const ExplorerVisualizations = ({
                 aria-label={'Toggle panel 2'}
                 iconType="menuLeft"
                 onClick={() => onChange(2)}
+                className="collapse-btn"
               />
             </EuiResizablePanel>
 
             <EuiResizableButton />
             <EuiResizablePanel
+              id="panel-main"
               className="containerPanel"
               initialSize={65}
               minSize="30%"
@@ -198,6 +179,7 @@ export const ExplorerVisualizations = ({
             </EuiResizablePanel>
             <EuiResizableButton />
             <EuiResizablePanel
+              id="panel3"
               className="containerPanel"
               initialSize={20}
               minSize="200px"

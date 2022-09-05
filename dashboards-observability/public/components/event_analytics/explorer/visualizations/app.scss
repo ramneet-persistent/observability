@@ -74,3 +74,14 @@
 .lensChartIcon__accent {
   fill: $euiColorVis0;
 }
+.position-relative {
+  position: relative;
+}
+
+.collapse-btn {
+  position: absolute;
+  top: 13px;
+  right: 0;
+  z-index: 9;
+  padding-left: 10px;
+}
