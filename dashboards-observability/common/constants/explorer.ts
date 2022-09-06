@@ -175,3 +175,15 @@ export const DefaultBarChartStyles: DefaultBarChartStylesProps = {
   BarWidth: 0.97,
   LineWidth: 1,
 };
+
+export enum ConfigChartOptionsEnum {
+  palettePicker = 'palettePicker',
+  singleColorPicker = 'singleColorPicker',
+  colorpicker = 'colorpicker',
+  treemapColorPicker = 'treemapColorPicker',
+  input = 'input',
+  textInput = 'textInput',
+  slider = 'slider',
+  switchButton = 'switchButton',
+  buttons = 'buttons',
+}

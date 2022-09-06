@@ -9,7 +9,7 @@ import { Plt } from '../../plotly/plot';
 import { LONG_CHART_COLOR, PLOTLY_COLOR } from '../../../../../common/constants/shared';
 import { AvailabilityUnitType } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_availability';
 import { ThresholdUnitType } from '../../../event_analytics/explorer/visualizations/config_panel/config_panes/config_controls/config_thresholds';
-import { hexToRgb } from '../../../event_analytics/utils/utils';
+import { hexToRgb, filterDataConfigParameter } from '../../../event_analytics/utils/utils';
 import { EmptyPlaceholder } from '../../../event_analytics/explorer/visualizations/shared_components/empty_placeholder';
 import { getConfigChartStyleParameter } from '../helpers';
 import { FILLOPACITY_DIV_FACTOR, ChartsMinMaxLimits } from '../../../../../common/constants/shared';
@@ -43,8 +43,8 @@ export const Bar = ({ visualizations, layout, config }: any) => {
     availabilityConfig = {},
   } = visualizations?.data?.userConfigs;
 
-  const xaxis = valueOptions.dimensions ? valueOptions.dimensions.filter((item) => item.label) : [];
-  const yaxis = valueOptions.metrics ? valueOptions.metrics.filter((item) => item.label) : [];
+  const xaxis = valueOptions.dimensions ? filterDataConfigParameter(valueOptions.dimensions) : [];
+  const yaxis = valueOptions.metrics ? filterDataConfigParameter(valueOptions.metrics) : [];
   const barOrientation = chartStyles.orientation || vis.orientation;
   const isVertical = barOrientation === vis.orientation;
   const tooltipMode =

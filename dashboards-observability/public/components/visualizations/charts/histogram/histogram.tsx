@@ -19,7 +19,7 @@ import {
 const { LINE_WIDTH_MAX, LINE_WIDTH_MIN, OPACITY_MIN, OPACITY_MAX } = ChartsMinMaxLimits;
 
 export const Histogram = ({ visualizations, layout, config }: any) => {
-  const { LineWidth, FillOpacity, LegendPosition, ShowLegend } = DefaultChartStyles;
+  const { LegendPosition, ShowLegend } = DefaultChartStyles;
   const { vis } = visualizations;
   const {
     data = {},

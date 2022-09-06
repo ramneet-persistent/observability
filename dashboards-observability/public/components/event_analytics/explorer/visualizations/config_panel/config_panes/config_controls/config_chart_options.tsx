@@ -13,6 +13,7 @@ import {
   SLIDER_MAX_VALUE,
   SLIDER_DEFAULT_STEP,
 } from '../../../../../../../../common/constants/shared';
+import { ConfigChartOptionsEnum } from '../../../../../../../../common/constants/explorer';
 
 export const ConfigChartOptions = ({
   visualizations,
@@ -56,89 +57,106 @@ export const ConfigChartOptions = ({
           ...schema.props,
         };
         const DimensionComponent = schema.component || PanelItem;
-        if (schema.eleType === 'palettePicker') {
-          params = {
-            ...params,
-            colorPalettes: schema.options || [],
-            selectedColor: vizState[schema.mapTo] || schema.defaultState,
-            onSelectChange: handleConfigurationChange(schema.mapTo),
-          };
-        } else if (schema.eleType === 'singleColorPicker') {
-          params = {
-            ...params,
-            selectedColor: vizState[schema.mapTo] || schema.defaultState,
-            onSelectChange: handleConfigurationChange(schema.mapTo),
-          };
-        } else if (schema.eleType === 'colorpicker') {
-          params = {
-            ...params,
-            selectedColor: vizState[schema.mapTo] || schema?.defaultState,
-            colorPalettes: schema.options || [],
-            onSelectChange: handleConfigurationChange(schema.mapTo),
-          };
-        } else if (schema.eleType === 'treemapColorPicker') {
-          params = {
-            ...params,
-            selectedColor: vizState[schema.mapTo] || schema?.defaultState,
-            colorPalettes: schema.options || [],
-            numberOfParents:
-              (dataConfig?.valueOptions?.dimensions !== undefined &&
-                dataConfig.valueOptions.dimensions[0].parentFields.length) | 0,
-            onSelectChange: handleConfigurationChange(schema.mapTo),
-          };
-        } else if (schema.eleType === 'input') {
-          params = {
-            ...params,
-            currentValue: vizState[schema.mapTo] || '',
-            numValue: vizState[schema.mapTo] || '',
-            handleInputChange: handleConfigurationChange(schema.mapTo),
-          };
-        } else if (schema.eleType === 'slider') {
-          params = {
-            ...params,
-            minRange:
-              typeof get(schema, 'props.min') === undefined
-                ? SLIDER_MIN_VALUE
-                : get(schema, 'props.min'),
-            maxRange:
-              typeof get(schema, 'props.max') === undefined
-                ? SLIDER_MAX_VALUE
-                : get(schema, 'props.max'),
-            step: schema?.props?.step || SLIDER_DEFAULT_STEP,
-            currentRange: vizState[schema.mapTo] || schema?.defaultState,
-            handleSliderChange: handleConfigurationChange(schema.mapTo),
-          };
-        } else if (schema.eleType === 'switchButton') {
-          params = {
-            ...params,
-            title: schema.name,
-            currentValue: vizState[schema.mapTo],
-            onToggle: handleConfigurationChange(schema.mapTo),
-          };
-        } else if (schema.eleType === 'buttons') {
-          params = {
-            ...params,
-            title: schema.name,
-            legend: schema.name,
-            groupOptions: schema?.props?.options.map((btn: { name: string }) => ({
-              ...btn,
-              label: btn.name,
-            })),
-            idSelected: vizState[schema.mapTo] || schema?.props?.defaultSelections[0]?.id,
-            handleButtonChange: handleConfigurationChange(schema.mapTo),
-          };
-        } else {
-          params = {
-            ...params,
-            paddingTitle: schema.name,
-            advancedTitle: 'advancedTitle',
-            dropdownList:
-              schema?.options?.map((option) => ({ ...option })) ||
-              fields.map((item) => ({ ...item })),
-            onSelectChange: handleConfigurationChange(schema.mapTo),
-            isSingleSelection: schema.isSingleSelection,
-            selectedAxis: vizState[schema.mapTo] || schema.defaultState,
-          };
+        switch (schema.eleType) {
+          case ConfigChartOptionsEnum.palettePicker:
+            params = {
+              ...params,
+              colorPalettes: schema.options || [],
+              selectedColor: vizState[schema.mapTo] || schema.defaultState,
+              onSelectChange: handleConfigurationChange(schema.mapTo),
+            };
+            break;
+
+          case ConfigChartOptionsEnum.singleColorPicker:
+            params = {
+              ...params,
+              selectedColor: vizState[schema.mapTo] || schema.defaultState,
+              onSelectChange: handleConfigurationChange(schema.mapTo),
+            };
+            break;
+
+          case ConfigChartOptionsEnum.colorpicker:
+            params = {
+              ...params,
+              selectedColor: vizState[schema.mapTo] || schema?.defaultState,
+              colorPalettes: schema.options || [],
+              onSelectChange: handleConfigurationChange(schema.mapTo),
+            };
+            break;
+
+          case ConfigChartOptionsEnum.treemapColorPicker:
+            params = {
+              ...params,
+              selectedColor: vizState[schema.mapTo] || schema?.defaultState,
+              colorPalettes: schema.options || [],
+              numberOfParents:
+                (dataConfig?.valueOptions?.dimensions !== undefined &&
+                  dataConfig.valueOptions.dimensions[0].parentFields.length) | 0,
+              onSelectChange: handleConfigurationChange(schema.mapTo),
+            };
+            break;
+
+          case ConfigChartOptionsEnum.input:
+            params = {
+              ...params,
+              currentValue: vizState[schema.mapTo] || '',
+              numValue: vizState[schema.mapTo] || '',
+              handleInputChange: handleConfigurationChange(schema.mapTo),
+            };
+            break;
+
+          case ConfigChartOptionsEnum.slider:
+            params = {
+              ...params,
+              minRange:
+                typeof get(schema, 'props.min') === undefined
+                  ? SLIDER_MIN_VALUE
+                  : get(schema, 'props.min'),
+              maxRange:
+                typeof get(schema, 'props.max') === undefined
+                  ? SLIDER_MAX_VALUE
+                  : get(schema, 'props.max'),
+              step: schema?.props?.step || SLIDER_DEFAULT_STEP,
+              currentRange: vizState[schema.mapTo] || schema?.defaultState,
+              handleSliderChange: handleConfigurationChange(schema.mapTo),
+            };
+            break;
+
+          case ConfigChartOptionsEnum.switchButton:
+            params = {
+              ...params,
+              title: schema.name,
+              currentValue: vizState[schema.mapTo],
+              onToggle: handleConfigurationChange(schema.mapTo),
+            };
+            break;
+
+          case ConfigChartOptionsEnum.buttons:
+            params = {
+              ...params,
+              title: schema.name,
+              legend: schema.name,
+              groupOptions: schema?.props?.options.map((btn: { name: string }) => ({
+                ...btn,
+                label: btn.name,
+              })),
+              idSelected: vizState[schema.mapTo] || schema?.props?.defaultSelections[0]?.id,
+              handleButtonChange: handleConfigurationChange(schema.mapTo),
+            };
+            break;
+
+          default:
+            params = {
+              ...params,
+              paddingTitle: schema.name,
+              advancedTitle: 'advancedTitle',
+              dropdownList:
+                schema?.options?.map((option) => ({ ...option })) ||
+                fields.map((item) => ({ ...item })),
+              onSelectChange: handleConfigurationChange(schema.mapTo),
+              isSingleSelection: schema.isSingleSelection,
+              selectedAxis: vizState[schema.mapTo] || schema.defaultState,
+            };
         }
 
         return (

@@ -284,6 +284,6 @@ export interface GetConfigChartStyleParameterType {
   min: number;
   max: number;
   parameter: string;
-  chartStyles: any;
-  vis: any;
+  chartStyles: object;
+  vis: object;
 }

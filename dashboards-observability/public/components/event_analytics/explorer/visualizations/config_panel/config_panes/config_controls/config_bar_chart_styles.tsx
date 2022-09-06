@@ -13,6 +13,7 @@ import {
   SLIDER_MAX_VALUE,
   SLIDER_DEFAULT_STEP,
 } from '../../../../../../../../common/constants/shared';
+import { ConfigChartOptionsEnum } from '../../../../../../../../common/constants/explorer';
 
 export const ConfigBarChartStyles = ({
   visualizations,
@@ -40,31 +41,29 @@ export const ConfigBarChartStyles = ({
   /* To update the schema options based on current style mode selection */
   const currentSchemas = useMemo(() => {
     if (vizState?.orientation === 'h') {
-      return schemas.filter(
-        (schema: IConfigPanelOptionSection) => schema.mapTo !== 'rotateBarLabels'
-      );
+      return schemas.filter((schema: IConfigPanelOptionSection) => schema.mapTo !== 'labelAngle');
     }
     return schemas;
   }, [vizState]);
 
   const dimensions = useMemo(
     () =>
-      currentSchemas
-        .map((schema: IConfigPanelOptionSection, index: number) => {
-          let params = {
-            title: schema.name,
-            vizState,
-            ...schema.props,
-          };
-          const DimensionComponent = schema.component || ButtonGroupItem;
+      currentSchemas.map((schema: IConfigPanelOptionSection, index: number) => {
+        let params = {
+          title: schema.name,
+          vizState,
+          ...schema.props,
+        };
+        const DimensionComponent = schema.component || ButtonGroupItem;
 
-          const createDimensionComponent = (dimProps) => (
-            <Fragment key={`viz-series-${index}`}>
-              <DimensionComponent {...dimProps} />
-              <EuiSpacer size="s" />
-            </Fragment>
-          );
-          if (schema.eleType === 'buttons') {
+        const createDimensionComponent = (dimProps) => (
+          <Fragment key={`viz-series-${index}`}>
+            <DimensionComponent {...dimProps} />
+            <EuiSpacer size="s" />
+          </Fragment>
+        );
+        switch (schema.eleType) {
+          case ConfigChartOptionsEnum.buttons:
             params = {
               ...params,
               legend: schema.name,
@@ -76,8 +75,7 @@ export const ConfigBarChartStyles = ({
               handleButtonChange: handleConfigurationChange(schema.mapTo),
             };
             return createDimensionComponent(params);
-          }
-          if (schema.eleType === 'input') {
+          case ConfigChartOptionsEnum.input:
             params = {
               title: schema.name,
               currentValue: vizState[schema.mapTo] || '',
@@ -87,8 +85,8 @@ export const ConfigBarChartStyles = ({
               ...schema.props,
             };
             return createDimensionComponent(params);
-          }
-          if (schema.eleType === 'slider') {
+
+          case ConfigChartOptionsEnum.slider:
             params = {
               ...params,
               minRange:
@@ -106,10 +104,23 @@ export const ConfigBarChartStyles = ({
               handleSliderChange: handleConfigurationChange(schema.mapTo),
             };
             return createDimensionComponent(params);
-          }
-        })
-        .filter((item) => item),
-    [schemas, vizState, handleConfigurationChange]
+
+          default:
+            params = {
+              ...params,
+              paddingTitle: schema.name,
+              advancedTitle: 'advancedTitle',
+              dropdownList:
+                schema?.options?.map((option) => ({ ...option })) ||
+                fields.map((item) => ({ ...item })),
+              onSelectChange: handleConfigurationChange(schema.mapTo),
+              isSingleSelection: schema.isSingleSelection,
+              selectedAxis: vizState[schema.mapTo] || schema.defaultState,
+            };
+            return createDimensionComponent(params);
+        }
+      }),
+    [currentSchemas, vizState, handleConfigurationChange]
   );
 
   return (

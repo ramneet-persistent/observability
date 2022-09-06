@@ -361,7 +361,7 @@ export const fetchConfigObject = (editor: string, propsOptions: any) => {
 };
 
 export const filterDataConfigParameter = (parameter: ConfigListEntry[]) =>
-  parameter.filter((configItem: ConfigListEntry) => configItem.label);
+  parameter.filter((configItem: ConfigListEntry) => configItem.label !== '');
 
 export const getTooltipHoverInfo = ({ tooltipMode, tooltipText }: GetTooltipHoverInfoType) => {
   if (tooltipMode === 'hidden') {
