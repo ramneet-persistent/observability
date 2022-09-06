@@ -48,13 +48,13 @@ export const ExplorerVisualizations = ({
   callback,
   changeIsValidConfigOptionState,
 }: IExplorerVisualizationsProps) => {
-  const collapseFn = useRef(() => {});
+  const collapseFn = useRef({});
   const { tabId } = useContext<any>(TabContext);
   const { data, vis } = visualizations;
   const { data: vizData = {}, metadata: { fields = [] } = {} } = data?.rawVizData;
 
   const fieldOptionList = explorerFields.availableFields.map((field) => {
-  // const fieldOptionList = fields.map((field) => {
+    // const fieldOptionList = fields.map((field) => {
     return { ...field, label: field.name };
   });
 
