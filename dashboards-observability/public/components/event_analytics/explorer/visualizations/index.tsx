@@ -9,7 +9,11 @@ import { isEmpty } from 'lodash';
 
 import React, { useContext, useRef, useState } from 'react';
 import { EuiPanel, EuiResizableContainer, EuiSpacer, EuiButtonIcon } from '@elastic/eui';
-import { RAW_QUERY, SELECTED_TIMESTAMP } from '../../../../../common/constants/explorer';
+import {
+  RAW_QUERY,
+  SELECTED_TIMESTAMP,
+  ExplorerResizablePanelsWidth,
+} from '../../../../../common/constants/explorer';
 import { IField, IQuery, IVisualizationContainerProps } from '../../../../../common/types/explorer';
 import { WorkspacePanel } from './workspace_panel';
 import { ConfigPanel } from './config_panel';
@@ -19,6 +23,16 @@ import { TabContext } from '../../hooks';
 import { PPL_STATS_REGEX, visChartTypes } from '../../../../../common/constants/shared';
 import { TreemapConfigPanelItem } from './config_panel/config_panes/config_controls/treemap_config_panel_item';
 import { LogsViewConfigPanelItem } from './config_panel/config_panes/config_controls/logs_view_config_panel_item';
+const {
+  QueryFieldsPanelInitialSize,
+  QueryFieldsPanelMinSize,
+  DataConfigPanelInitialSize,
+  DataConfigPanelMinSize,
+  ChartStylesPanelInitialSize,
+  ChartStylesPanelMinSize,
+  MainPanelInitialSize,
+  MainPanelMinSize,
+} = ExplorerResizablePanelsWidth;
 interface IExplorerVisualizationsProps {
   query: IQuery;
   curVisId: string;
@@ -111,8 +125,8 @@ export const ExplorerVisualizations = ({
             <EuiResizablePanel
               id="panel1"
               aria-label="query-fields-resizable-panel"
-              initialSize={17}
-              minSize="300"
+              initialSize={QueryFieldsPanelInitialSize}
+              minSize={QueryFieldsPanelMinSize}
               mode={['custom', { position: 'top' }]}
               className="position-relative"
             >
@@ -147,8 +161,8 @@ export const ExplorerVisualizations = ({
               aria-label="data-config-resizable-panel"
               mode={['custom', { position: 'top' }]}
               className="containerPanel position-relative"
-              initialSize={14}
-              minSize="300"
+              initialSize={DataConfigPanelInitialSize}
+              minSize={DataConfigPanelMinSize}
             >
               <EuiSpacer size="s" />
               <EuiPanel paddingSize="s" className="dataConfigContainer">
@@ -167,9 +181,10 @@ export const ExplorerVisualizations = ({
             <EuiResizablePanel
               id="panel-main"
               className="containerPanel"
-              initialSize={65}
-              minSize="30%"
+              initialSize={MainPanelInitialSize}
+              minSize={MainPanelMinSize}
               mode="main"
+              aria-label="main-panel"
             >
               <WorkspacePanel
                 curVisId={curVisId}
@@ -181,9 +196,10 @@ export const ExplorerVisualizations = ({
             <EuiResizablePanel
               id="panel3"
               className="containerPanel"
-              initialSize={20}
-              minSize="200px"
+              initialSize={ChartStylesPanelInitialSize}
+              minSize={ChartStylesPanelMinSize}
               mode={['collapsible', { position: 'top' }]}
+              aria-label="chart-styles-resizable-panel"
             >
               <ConfigPanel
                 vizVectors={explorerVis}
