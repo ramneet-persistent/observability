@@ -27,14 +27,11 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
 
   // data config parametrs
   const { dataConfig = {}, layoutConfig = {} } = visualizations.data.userConfigs;
-  const dimensions = dataConfig?.dimensions
-    ? dataConfig.dimensions.filter((item) => item.name !== '')
-    : [];
-  const metrics = dataConfig?.metrics ? dataConfig.metrics.filter((item) => item.name !== '') : [];
+  const dimensions = dataConfig?.dimensions ? dataConfig.dimensions : [];
+  const metrics = dataConfig?.metrics ? dataConfig.metrics : [];
   const dimensionsLength = dimensions.length;
   const metricsLength = metrics.length;
   const numberOfGauges = dataConfig?.panelOptions?.numberOfGauges || DisplayDefaultGauges;
-
   // style parameters
   const thresholds = dataConfig?.thresholds || [];
   const titleSize = dataConfig?.chartStyles?.titleSize || GaugeTitleSize;
@@ -123,7 +120,7 @@ export const Gauge = ({ visualizations, layout, config }: any) => {
                   value: thresholds[0]?.value || 0,
                 },
               }),
-            //threshold labels
+            // threshold labels
             ...(showThresholdLabels && thresholds && thresholds.length
               ? {
                   axis: {
