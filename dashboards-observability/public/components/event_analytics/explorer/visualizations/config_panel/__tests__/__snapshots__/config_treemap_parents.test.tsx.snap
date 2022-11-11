@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConfigTreemapParentFields component Renders ConfigTreemapParentFields with empty data 1`] = `
+<ConfigTreemapParentFields
+  handleUpdateParentFields={[MockFunction]}
+  selectedAxis={Array []}
+  setSelectedParentItem={[MockFunction]}
+>
+  <EuiSpacer
+    size="s"
+  >
+    <div
+      className="euiSpacer euiSpacer--s"
+    />
+  </EuiSpacer>
+  <EuiPanel
+    className="panelItem_button"
+    grow={true}
+  >
+    <div
+      className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusMedium euiPanel--plain euiPanel--hasShadow panelItem_button"
+    >
+      <EuiText
+        size="s"
+      >
+        <div
+          className="euiText euiText--small"
+        >
+          Add Parent
+        </div>
+      </EuiText>
+      <EuiButtonIcon
+        aria-label="clear-field"
+        color="primary"
+        iconSize="s"
+        iconType="plusInCircle"
+        onClick={[Function]}
+      >
+        <button
+          aria-label="clear-field"
+          className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall"
+          disabled={false}
+          onClick={[Function]}
+          type="button"
+        >
+          <EuiIcon
+            aria-hidden="true"
+            className="euiButtonIcon__icon"
+            color="inherit"
+            size="s"
+            type="plusInCircle"
+          >
+            <EuiIconEmpty
+              aria-hidden={true}
+              className="euiIcon euiIcon--small euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+              focusable="false"
+              role="img"
+              style={null}
+            >
+              <svg
+                aria-hidden={true}
+                className="euiIcon euiIcon--small euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                focusable="false"
+                height={16}
+                role="img"
+                style={null}
+                viewBox="0 0 16 16"
+                width={16}
+                xmlns="http://www.w3.org/2000/svg"
+              />
+            </EuiIconEmpty>
+          </EuiIcon>
+        </button>
+      </EuiButtonIcon>
+    </div>
+  </EuiPanel>
+</ConfigTreemapParentFields>
+`;
